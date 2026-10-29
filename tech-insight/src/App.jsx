@@ -10,7 +10,9 @@ import NotFound from "./pages/NotFound";
 
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-import AdminLogin from "./pages/admin/AdminLogin";
+import EventManagement from "./pages/Admin/EventManagement";
+import CompanyManagement from "./pages/Admin/CompanyManagement";
+import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 
@@ -25,15 +27,21 @@ return ( <BrowserRouter> <Routes>
 <Route path="/topics/:slug" element={<TopicPage />} />
 <Route path="/about" element={<AboutPage />} />
 <Route path="/contact" element={<ContactPage />} />
-
-
     {/* Admin login */}
-    <Route path="/admin/login" element={<AdminLogin />} />
+    <Route path="/insight-vault576/login" element={<AdminLogin />} />
 
     {/* Protected admin pages */}
     <Route element={<ProtectedRoute />}>
       <Route element={<AdminLayout />}>
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/insight-vault576" element={<AdminDashboard />} />
+        <Route
+          path="/insight-vault576/events"
+          element={<EventManagement />}
+        />
+        <Route
+          path="/insight-vault576/companies"
+          element={<CompanyManagement />}
+        />
       </Route>
     </Route>
 

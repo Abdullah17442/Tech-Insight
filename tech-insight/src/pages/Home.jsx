@@ -1,42 +1,75 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../App.css";
+import BrandLogo from "../components/BrandLogo";
+import CompanyLogo from "../components/CompanyLogo";
 import blogs from "../data/blogs";
 import companies from "../data/companies";
-import { supabase } from "../lib/supabaseClient";
+import { listPublishedArticles } from "../lib/articleService";
+import { listPublishedCompanies } from "../lib/companyService";
+import { listPublishedEvents } from "../lib/eventService";
+import { formatEventDate } from "../lib/eventUtils";
 
 function Home() {
-const [email, setEmail] = useState("");
-const [newsletterMessage, setNewsletterMessage] = useState("");
-const [newsletterStatus, setNewsletterStatus] = useState("");
-const [newsletterLoading, setNewsletterLoading] = useState(false);
+const [articles, setArticles] = useState(blogs);
+const [articleLoadError, setArticleLoadError] = useState("");
+const [companyItems, setCompanyItems] = useState(companies);
+const [showAllCompanies, setShowAllCompanies] = useState(false);
+const [companyLoadError, setCompanyLoadError] = useState("");
+const [upcomingEvents, setUpcomingEvents] = useState([]);
+const [eventLoadError, setEventLoadError] = useState("");
+const [eventsLoading, setEventsLoading] = useState(true);
 
-const upcomingEvents = [
-{
-date: "OCT 15",
-type: "Technology Event",
-title: "AI Infrastructure Summit 2026",
-location: "Global",
-description:
-"A look at the companies, technologies and infrastructure shaping the next generation of AI systems.",
-},
-{
-date: "OCT 22",
-type: "Data Center Event",
-title: "Data Center Infrastructure Forum",
-location: "Global",
-description:
-"Industry leaders discuss data centers, power, cooling, networking and the future of digital infrastructure.",
-},
-{
-date: "NOV 05",
-type: "Industry Event",
-title: "Cloud & Digital Infrastructure Conference",
-location: "Global",
-description:
-"Exploring cloud infrastructure, connectivity, compute capacity and the evolving digital economy.",
-},
-];
+useEffect(() => {
+const timer = setTimeout(() => {
+  listPublishedArticles()
+    .then(setArticles)
+    .catch((error) => {
+      console.error("Unable to load published articles:", error);
+      setArticleLoadError(
+        error instanceof Error
+          ? error.message
+          : "Published articles could not be refreshed from Supabase."
+      );
+    });
+}, 0);
+
+return () => clearTimeout(timer);
+}, []);
+
+useEffect(() => {
+const timer = setTimeout(() => {
+  listPublishedCompanies()
+    .then(setCompanyItems)
+    .catch((error) => {
+      console.error("Unable to load companies:", error);
+      setCompanyLoadError(
+        error instanceof Error ? error.message : "Companies could not be refreshed."
+      );
+    });
+}, 0);
+
+return () => clearTimeout(timer);
+}, []);
+
+useEffect(() => {
+const timer = setTimeout(() => {
+  listPublishedEvents()
+    .then(setUpcomingEvents)
+    .catch((error) => {
+      console.error("Unable to load upcoming blogs:", error);
+      setEventLoadError(
+        error instanceof Error
+          ? error.message
+          : "Upcoming blogs could not be refreshed."
+      );
+    })
+    .finally(() => {
+      setEventsLoading(false);
+    });
+}, 0);
+
+return () => clearTimeout(timer);
+}, []);
 
 const topics = [
 { number: "01", title: "Data Centers" },
@@ -48,73 +81,13 @@ const topics = [
 { number: "07", title: "Technology" },
 ];
 
-async function handleNewsletterSubmit(event) {
-event.preventDefault();
-
-const normalizedEmail = email.trim().toLowerCase();
-
-if (!normalizedEmail) {
-  setNewsletterStatus("error");
-  setNewsletterMessage("Please enter your email address.");
-  return;
-}
-
-setNewsletterLoading(true);
-setNewsletterMessage("");
-setNewsletterStatus("");
-
-try {
-  const { data, error } = await supabase.functions.invoke(
-    "subscribe-newsletter",
-    {
-      body: { email: normalizedEmail },
-    }
-  );
-
-  if (error) {
-    throw error;
-  }
-
-  if (data?.error) {
-    throw new Error(data.error);
-  }
-
-  setNewsletterStatus("success");
-  setNewsletterMessage(
-    data?.message ||
-      "Please check your inbox for a confirmation email."
-  );
-  setEmail("");
-} catch (error) {
-  console.error("Newsletter subscription failed:", error);
-
-  setNewsletterStatus("error");
-  setNewsletterMessage(
-    error instanceof Error
-      ? error.message
-      : "Something went wrong. Please try again."
-  );
-} finally {
-  setNewsletterLoading(false);
-}
-
-
-}
-
 return ( <div className="site">
 {/* TOP BAR */} <div className="top-bar"> <div className="container top-bar-inner"> <span>TECH INSIDE — UNDERSTANDING THE DIGITAL WORLD</span> <span>DATA CENTERS · AI · CLOUD · INFRASTRUCTURE</span> </div> </div>
 
-```
   {/* HEADER / NAVIGATION */}
   <header className="site-header">
     <div className="container header-inner">
-      <Link to="/" className="logo">
-        <div className="logo-mark">TI</div>
-        <div className="logo-text">
-          TECH INSIDE
-          <small>TECHNOLOGY &amp; INFRASTRUCTURE</small>
-        </div>
-      </Link>
+      <BrandLogo className="logo" transparent />
 
       <nav className="main-nav" aria-label="Main navigation">
         <Link to="/">Home</Link>
@@ -123,7 +96,7 @@ return ( <div className="site">
         <div className="nav-dropdown">
           <button className="nav-dropdown-btn" type="button">
             Topics
-            <span className="dropdown-arrow">⌄</span>
+            <span className="dropdown-arrow" aria-hidden="true" />
           </button>
 
           <div className="dropdown-menu">
@@ -188,28 +161,36 @@ return ( <div className="site">
   {/* UPCOMING EVENTS */}
   <section className="events-section">
     <div className="container">
-      <SectionHeading title="Upcoming Events" label="What's Coming" />
+      <SectionHeading title="Upcoming Blogs" label="What's Coming" />
+
+      {eventLoadError && <p role="status">{eventLoadError}</p>}
 
       <div className="events-grid">
-        {upcomingEvents.map((event) => (
-          <article className="event-card" key={event.title}>
-            <div className="event-date">
-              <span>{event.date.split(" ")[0]}</span>
-              <strong>{event.date.split(" ")[1]}</strong>
-            </div>
-
-            <div className="event-content">
-              <div className="event-meta">
-                <span>{event.type}</span>
-                <span>{event.location}</span>
+        {upcomingEvents.map((event) => {
+          const date = formatEventDate(event.event_date);
+          return (
+            <article className="event-card" key={event.id}>
+              <div className="event-date">
+                <span>{date.month}</span>
+                <strong>{date.day}</strong>
               </div>
 
-              <h3>{event.title}</h3>
-              <p>{event.description}</p>
-            </div>
-          </article>
-        ))}
+              <div className="event-content">
+                <div className="event-meta">
+                  <span>{event.type}</span>
+                  <span>{event.company_name}</span>
+                </div>
+
+                <h3>{event.title}</h3>
+                <p>{event.description}</p>
+              </div>
+            </article>
+          );
+        })}
       </div>
+      {!eventsLoading && !eventLoadError && upcomingEvents.length === 0 && (
+        <p className="events-empty-state">No events scheduled right now. Check back soon.</p>
+      )}
     </div>
   </section>
 
@@ -247,16 +228,18 @@ return ( <div className="site">
     </div>
   </section>
 
-  {/* LATEST STORIES / NEWS */}
+  {/* RECENT STORIES / NEWS */}
   <section className="latest" id="news">
     <div className="container">
       <SectionHeading
-        title="Latest Stories"
+        title="Recent Stories"
         label="What's Happening Now"
       />
 
+      {articleLoadError && <p role="status">{articleLoadError}</p>}
+
       <div className="story-grid">
-        {blogs.slice(0, 3).map((blog) => (
+        {articles.slice(0, 3).map((blog) => (
           <article className="story-card" key={blog.id}>
             <div className="story-image">
               {blog.image ? (
@@ -299,38 +282,43 @@ return ( <div className="site">
         </p>
       </div>
 
+      {companyLoadError && <p className="company-load-error" role="status">{companyLoadError}</p>}
       <div className="company-grid">
-        {companies.map((company) => (
+        {(showAllCompanies ? companyItems : companyItems.slice(0, 3)).map((company) => (
           <article className="company-card" key={company.id}>
             <div className="company-card-header">
-              <div className="company-logo">
-                {company.logo ? (
-                  <img
-                    src={company.logo}
-                    alt={`${company.name} logo`}
-                  />
-                ) : (
-                  <span>{company.name.charAt(0)}</span>
-                )}
-              </div>
+              <CompanyLogo company={company} />
 
               <span className="company-label">COMPANY</span>
             </div>
 
             <h3>{company.name}</h3>
             <p className="company-industry">{company.industry}</p>
+            <p className="company-description">{company.description}</p>
 
-            <a
-              href={company.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="company-link"
-            >
-              Read About {company.name} →
-            </a>
+            {company.website && (
+              <a
+                href={company.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="company-link"
+              >
+                Read About {company.name} →
+              </a>
+            )}
           </article>
         ))}
       </div>
+      {companyItems.length > 3 && (
+        <button
+          type="button"
+          className="company-show-more"
+          aria-expanded={showAllCompanies}
+          onClick={() => setShowAllCompanies((shown) => !shown)}
+        >
+          {showAllCompanies ? "Show less" : "Show more"}
+        </button>
+      )}
     </div>
   </section>
 
@@ -399,71 +387,12 @@ return ( <div className="site">
     </div>
   </section>
 
-  {/* NEWSLETTER */}
-  <section className="newsletter">
-    <div className="container newsletter-inner">
-      <div>
-        <h2>
-          Understand
-          <br />
-          What's Next.
-        </h2>
-
-        <p>
-          Get the latest technology infrastructure stories,
-          explainers and analysis from Tech Inside.
-        </p>
-      </div>
-
-      <form
-        className="newsletter-form"
-        onSubmit={handleNewsletterSubmit}
-      >
-        <input
-          type="email"
-          placeholder="Enter your email address"
-          aria-label="Email address"
-          autoComplete="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-          disabled={newsletterLoading}
-        />
-
-        <button type="submit" disabled={newsletterLoading}>
-          {newsletterLoading ? "Sending..." : "Subscribe"}
-        </button>
-
-        {newsletterMessage && (
-          <p
-            role="status"
-            aria-live="polite"
-            className={`newsletter-message ${
-              newsletterStatus === "error"
-                ? "newsletter-message-error"
-                : "newsletter-message-success"
-            }`}
-          >
-            {newsletterMessage}
-          </p>
-        )}
-      </form>
-    </div>
-  </section>
-
   {/* FOOTER / CONTACT */}
   <footer id="contact">
     <div className="container">
       <div className="footer-grid">
         <div className="footer-brand">
-          <div className="logo">
-            <div className="logo-mark">TI</div>
-
-            <div className="logo-text">
-              TECH INSIDE
-              <small>TECHNOLOGY &amp; INFRASTRUCTURE</small>
-            </div>
-          </div>
+          <BrandLogo className="logo" transparent />
 
           <p>
             Understanding the technology, infrastructure and
@@ -484,7 +413,7 @@ return ( <div className="site">
 
         <FooterColumn
           title="Explore"
-          links={["Companies", "Latest Stories"]}
+          links={["Companies", "Recent Stories"]}
         />
 
         <div className="footer-contact">

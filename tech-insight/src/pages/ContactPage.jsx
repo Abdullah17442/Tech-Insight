@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
+import SiteBrandBar from "../components/SiteBrandBar";
 import "./ContactPage.css";
 
 function ContactPage() {
   return (
     <div className="contact-page">
+      <SiteBrandBar />
       <main>
         {/* =====================================================
             CONTACT HERO

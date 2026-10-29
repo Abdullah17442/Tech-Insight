@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
+import SiteBrandBar from "../components/SiteBrandBar";
 import "./AboutPage.css";
 
 function AboutPage() {
   return (
     <div className="about-page">
+      <SiteBrandBar />
       <main>
         {/* =====================================================
             ABOUT HERO

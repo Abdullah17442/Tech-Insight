@@ -287,6 +287,105 @@
   text-transform: uppercase;
 }
 
+.news-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: -17px 0 34px;
+}
+
+.news-search {
+  display: flex;
+  min-width: 240px;
+  max-width: 460px;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.news-search:focus-within,
+.news-category-filter:focus-within {
+  border-color: #b99b00;
+  box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2);
+}
+
+.news-search-icon {
+  color: #757575;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.news-search input {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--black);
+  font: inherit;
+  font-size: 14px;
+}
+
+.news-search input::placeholder {
+  color: #818181;
+}
+
+.news-category-filter {
+  display: block;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.news-category-filter select {
+  min-width: 170px;
+  min-height: 48px;
+  padding: 0 36px 0 14px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #333;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.news-filter-reset {
+  padding: 11px 13px;
+  border: 0;
+  border-radius: 6px;
+  background: #f3f3f3;
+  color: #343434;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.news-filter-reset:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* =========================================================
    NEWS GRID
 ========================================================= */
@@ -575,6 +674,24 @@
 
   .news-section-heading h2 {
     font-size: 34px;
+  }
+
+  .news-filters {
+    align-items: stretch;
+    flex-direction: column;
+    margin-top: -12px;
+  }
+
+  .news-search {
+    max-width: none;
+  }
+
+  .news-category-filter select {
+    width: 100%;
+  }
+
+  .news-filter-reset {
+    align-self: flex-start;
   }
 
   .news-grid {

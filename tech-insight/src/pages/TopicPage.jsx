@@ -1,10 +1,32 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import blogs from "../data/blogs";
 import BlogCard from "../components/BlogCard";
+import SiteBrandBar from "../components/SiteBrandBar";
+import { listPublishedArticles } from "../lib/articleService";
 import "./TopicPage.css";
 
 function TopicPage() {
   const { slug } = useParams();
+  const [articles, setArticles] = useState(blogs);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      listPublishedArticles()
+        .then(setArticles)
+        .catch((error) => {
+          console.error("Unable to load published articles:", error);
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : "Published articles could not be refreshed from Supabase."
+          );
+        });
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const topicName = slug
     ? slug
@@ -13,13 +35,14 @@ function TopicPage() {
         .join(" ")
     : "";
 
-  const topicBlogs = blogs.filter(
+  const topicBlogs = articles.filter(
     (blog) =>
       blog.category.toLowerCase().replace(/\s+/g, "-") === slug
   );
 
   return (
     <div className="topic-page">
+      <SiteBrandBar />
       <main>
         {/* =====================================================
             TOPIC HEADER
@@ -36,6 +59,7 @@ function TopicPage() {
             </span>
 
             <h1>{topicName}</h1>
+            {loadError && <p role="status">{loadError}</p>}
 
             <p>
               Explore the latest Tech Inside stories,
