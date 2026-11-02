@@ -6,6 +6,7 @@ import {
   buildArticlePayload,
   createUniqueSlug,
   getSafeArticleFontFamily,
+  sortArticlesByPublicationDate,
   toArticleViewModel,
   describeImageUploadError,
   validateArticleInput,
@@ -67,6 +68,13 @@ test("creates a unique, URL-safe slug", () => {
     createUniqueSlug("AI Data Centers", ["ai-data-centers", "other"]),
     "ai-data-centers-2"
   );
+});
+
+test("sorts newly published articles ahead of older published articles", () => {
+  const recent = { slug: "recent", published_at: "2026-11-01T10:00:00.000Z" };
+  const older = { slug: "older", published_at: "2026-10-31T10:00:00.000Z" };
+
+  assert.deepEqual(sortArticlesByPublicationDate([older, recent]), [recent, older]);
 });
 
 test("requires a title and article content", () => {

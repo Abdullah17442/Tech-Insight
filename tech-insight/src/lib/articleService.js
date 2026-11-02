@@ -7,6 +7,7 @@ import {
 import {
   buildArticlePayload,
   describeImageUploadError,
+  sortArticlesByPublicationDate,
   toArticleViewModel,
   validateArticleInput,
   validateImageFile,
@@ -49,9 +50,11 @@ export async function listAdminArticles() {
 
 export async function listPublishedArticles() {
   if (demoMode) {
-    return getStoredArticles()
-      .filter((article) => article.status === "published")
-      .map(toArticleViewModel);
+    return sortArticlesByPublicationDate(
+      getStoredArticles()
+        .filter((article) => article.status === "published")
+        .map(toArticleViewModel)
+    );
   }
 
   const { data, error } = await supabase
@@ -65,8 +68,8 @@ export async function listPublishedArticles() {
   }
 
   const articles = data || [];
-  return (articles.length ? articles : getDefaultArticles()).map(
-    toArticleViewModel
+  return sortArticlesByPublicationDate(
+    (articles.length ? articles : getDefaultArticles()).map(toArticleViewModel)
   );
 }
 

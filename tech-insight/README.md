@@ -67,6 +67,22 @@ npm run dev
 npm run build
 ```
 
+## Docker
+
+Build the production image from the `tech-insight` directory, providing the public Supabase project URL and publishable key:
+
+```bash
+docker build --build-arg VITE_SUPABASE_URL=your_supabase_project_url --build-arg VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key -t tech-insight .
+```
+
+Run it locally at `http://localhost:8080`:
+
+```bash
+docker run --rm -p 8080:80 tech-insight
+```
+
+Vite embeds these values in the frontend during the image build. Rebuild the image to change them. Use only a publishable/anon key; never pass a Supabase service-role key or other secret as a frontend build argument.
+
 ## Environment Variables
 
 Create a local environment file with the required Supabase variables:

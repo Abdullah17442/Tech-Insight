@@ -1,3 +1,5 @@
+import { isSafeArticleImageSource } from "./articleEditorUtils.js";
+
 export const MAX_ARTICLE_IMAGE_SIZE = 5 * 1024 * 1024;
 export const ARTICLE_FONT_FAMILIES = [
   "Arial",
@@ -45,6 +47,16 @@ export function createUniqueSlug(title, existingSlugs = [], currentSlug = "") {
   return slug;
 }
 
+export function sortArticlesByPublicationDate(articles) {
+  return [...articles].sort((first, second) => {
+    const firstDate = Date.parse(first.published_at || first.created_at || "");
+    const secondDate = Date.parse(second.published_at || second.created_at || "");
+    const normalizedFirstDate = Number.isNaN(firstDate) ? 0 : firstDate;
+    const normalizedSecondDate = Number.isNaN(secondDate) ? 0 : secondDate;
+    return normalizedSecondDate - normalizedFirstDate;
+  });
+}
+
 export function validateArticleInput(article) {
   const plainContent = String(article?.content || "")
     .replace(/<[^>]*>/g, "")
@@ -84,6 +96,7 @@ export function sanitizeArticleHtml(value) {
     "EM",
     "H2",
     "H3",
+    "IMG",
     "I",
     "LI",
     "OL",
@@ -146,6 +159,20 @@ export function sanitizeArticleHtml(value) {
           safeNode.setAttribute("href", href);
         } else if (!/^[a-z][a-z\d+.-]*:/i.test(href) && href) {
           safeNode.setAttribute("href", href);
+        }
+      } else if (node.tagName === "IMG") {
+        const source = node.getAttribute("src");
+        if (!isSafeArticleImageSource(source)) {
+          continue;
+        }
+        safeNode.setAttribute("src", source.trim());
+        const alt = node.getAttribute("alt");
+        if (alt) {
+          safeNode.setAttribute("alt", alt);
+        }
+        const width = Number(node.getAttribute("width"));
+        if (Number.isInteger(width) && width >= 1 && width <= 4096) {
+          safeNode.setAttribute("width", String(width));
         }
       }
       copySafeNodes(node, safeNode);

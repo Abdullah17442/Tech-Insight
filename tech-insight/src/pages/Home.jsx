@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import BrandLogo from "../components/BrandLogo";
 import CompanyLogo from "../components/CompanyLogo";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
+import TopicsDropdown from "../components/TopicsDropdown";
 import blogs from "../data/blogs";
 import companies from "../data/companies";
 import { listPublishedArticles } from "../lib/articleService";
@@ -18,6 +21,7 @@ const [companyLoadError, setCompanyLoadError] = useState("");
 const [upcomingEvents, setUpcomingEvents] = useState([]);
 const [eventLoadError, setEventLoadError] = useState("");
 const [eventsLoading, setEventsLoading] = useState(true);
+const latestBlog = articles[0];
 
 useEffect(() => {
 const timer = setTimeout(() => {
@@ -71,18 +75,8 @@ const timer = setTimeout(() => {
 return () => clearTimeout(timer);
 }, []);
 
-const topics = [
-{ number: "01", title: "Data Centers" },
-{ number: "02", title: "AI Infrastructure" },
-{ number: "03", title: "Cloud" },
-{ number: "04", title: "Cybersecurity" },
-{ number: "05", title: "Energy" },
-{ number: "06", title: "Networking" },
-{ number: "07", title: "Technology" },
-];
-
 return ( <div className="site">
-{/* TOP BAR */} <div className="top-bar"> <div className="container top-bar-inner"> <span>TECH INSIDE — UNDERSTANDING THE DIGITAL WORLD</span> <span>DATA CENTERS · AI · CLOUD · INFRASTRUCTURE</span> </div> </div>
+<TopBar />
 
   {/* HEADER / NAVIGATION */}
   <header className="site-header">
@@ -93,26 +87,7 @@ return ( <div className="site">
         <Link to="/">Home</Link>
         <Link to="/news">News</Link>
 
-        <div className="nav-dropdown">
-          <button className="nav-dropdown-btn" type="button">
-            Topics
-            <span className="dropdown-arrow" aria-hidden="true" />
-          </button>
-
-          <div className="dropdown-menu">
-            {topics.map((topic) => (
-              <Link
-                to={`/topics/${topic.title
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
-                key={topic.number}
-              >
-                <span>{topic.number}</span>
-                {topic.title}
-              </Link>
-            ))}
-          </div>
-        </div>
+        <TopicsDropdown />
 
         <Link to="/contact">Contact</Link>
         <Link to="/about">About</Link>
@@ -200,18 +175,32 @@ return ( <div className="site">
       <SectionHeading title="Latest Blog" label="Core Coverage" />
 
       <div className="spotlight-grid">
-        <div className="spotlight-main">
-          <span className="category">Featured Infrastructure</span>
-
-          <h3>
-            Inside The Infrastructure Powering The Digital Economy
-          </h3>
-
-          <p>
-            Explore how hyperscale, colocation, enterprise and
-            AI-focused facilities are designed, powered, cooled
-            and connected.
-          </p>
+        <div className={`spotlight-main${latestBlog?.image ? " spotlight-main-with-image" : ""}`}>
+          {latestBlog?.image && (
+            <img className="spotlight-image" src={latestBlog.image} alt="" />
+          )}
+          {latestBlog ? (
+            <>
+              <span className="category">{latestBlog.category}</span>
+              <h3>
+                <Link to={`/blog/${latestBlog.slug}`}>{latestBlog.title}</Link>
+              </h3>
+              <p>{latestBlog.description}</p>
+              <div className="spotlight-meta">
+                <span>{latestBlog.date}</span>
+                <span>{latestBlog.readTime}</span>
+              </div>
+              <Link className="spotlight-link" to={`/blog/${latestBlog.slug}`}>
+                Read the latest blog <span aria-hidden="true">→</span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="category">Latest Blog</span>
+              <h3>New stories are on the way</h3>
+              <p>Published articles will appear here as soon as they are available.</p>
+            </>
+          )}
         </div>
 
         <div className="spotlight-stat">
@@ -266,7 +255,7 @@ return ( <div className="site">
   </section>
 
   {/* COMPANIES */}
-  <section className="companies-section">
+  <section className="companies-section" id="companies">
     <div className="container">
       <SectionHeading
         title="Companies"
@@ -387,56 +376,7 @@ return ( <div className="site">
     </div>
   </section>
 
-  {/* FOOTER / CONTACT */}
-  <footer id="contact">
-    <div className="container">
-      <div className="footer-grid">
-        <div className="footer-brand">
-          <BrandLogo className="logo" transparent />
-
-          <p>
-            Understanding the technology, infrastructure and
-            businesses powering the digital world.
-          </p>
-        </div>
-
-        <FooterColumn
-          title="Coverage"
-          links={[
-            "Data Centers",
-            "AI Infrastructure",
-            "Cloud",
-            "Cybersecurity",
-            "Energy",
-          ]}
-        />
-
-        <FooterColumn
-          title="Explore"
-          links={["Companies", "Recent Stories"]}
-        />
-
-        <div className="footer-contact">
-          <h4>Contact</h4>
-
-          <p>
-            Have a story, correction, partnership idea or question?
-          </p>
-
-          <a href="mailto:contact@techinside.com">
-            contact@techinside.com
-          </a>
-
-          <Link to="/about">About Tech Inside →</Link>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        <span>© 2026 Tech Inside. All rights reserved.</span>
-        <span>Privacy · Terms · Disclaimer</span>
-      </div>
-    </div>
-  </footer>
+  <Footer id="contact" />
 </div>
 
 );
@@ -448,22 +388,6 @@ REUSABLE COMPONENTS
 
 function SectionHeading({ title, label }) {
 return ( <div className="section-heading"> <h2>{title}</h2> <span>{label}</span> </div>
-);
-}
-
-function FooterColumn({ title, links }) {
-return ( <div> <h4>{title}</h4>
-
-
-  <ul>
-    {links.map((link) => (
-      <li key={link}>
-        <a href="#">{link}</a>
-      </li>
-    ))}
-  </ul>
-</div>
-
 );
 }
 

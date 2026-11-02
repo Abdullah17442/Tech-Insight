@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import SiteBrandBar from "../components/SiteBrandBar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
 import "./ContactPage.css";
 
 function ContactPage() {
   return (
     <div className="contact-page">
+      <TopBar />
       <SiteBrandBar />
       <main>
         {/* =====================================================
@@ -166,6 +169,7 @@ function ContactPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

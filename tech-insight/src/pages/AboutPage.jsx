@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import SiteBrandBar from "../components/SiteBrandBar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
 import "./AboutPage.css";
 
 function AboutPage() {
   return (
     <div className="about-page">
+      <TopBar />
       <SiteBrandBar />
       <main>
         {/* =====================================================
@@ -199,6 +202,7 @@ function AboutPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

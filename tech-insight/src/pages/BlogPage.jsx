@@ -4,6 +4,7 @@ import blogs from "../data/blogs";
 import { listPublishedArticles } from "../lib/articleService";
 import { sanitizeArticleHtml } from "../lib/articleUtils";
 import SiteBrandBar from "../components/SiteBrandBar";
+import Footer from "../components/Footer";
 import "./BlogPage.css";
 
 function BlogPage() {
@@ -209,10 +210,20 @@ function BlogPage() {
                       to={`/blog/${article.slug}`}
                       key={article.id}
                     >
-                      <span>{article.category}</span>
-                      <h3>{article.title}</h3>
-                      <p>{article.description}</p>
-                      <strong>Read story <span aria-hidden="true">→</span></strong>
+                      {article.image && (
+                        <div className="blog-related-image">
+                          <img src={article.image} alt="" loading="lazy" />
+                          <span className="blog-related-category">{article.category}</span>
+                        </div>
+                      )}
+                      <div className="blog-related-copy">
+                        {!article.image && (
+                          <span className="blog-related-category">{article.category}</span>
+                        )}
+                        <h3>{article.title}</h3>
+                        <p>{article.description}</p>
+                        <strong>Read story <span aria-hidden="true">→</span></strong>
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -225,6 +236,7 @@ function BlogPage() {
           </div>
         </article>
       </main>
+      <Footer />
     </div>
   );
 }

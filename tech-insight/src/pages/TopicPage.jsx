@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import blogs from "../data/blogs";
 import BlogCard from "../components/BlogCard";
 import SiteBrandBar from "../components/SiteBrandBar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
 import { listPublishedArticles } from "../lib/articleService";
 import "./TopicPage.css";
 
@@ -42,6 +44,7 @@ function TopicPage() {
 
   return (
     <div className="topic-page">
+      <TopBar />
       <SiteBrandBar />
       <main>
         {/* =====================================================
@@ -112,6 +115,7 @@ function TopicPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

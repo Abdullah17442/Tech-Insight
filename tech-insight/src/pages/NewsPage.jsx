@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import blogs from "../data/blogs";
 import BlogCard from "../components/BlogCard";
 import SiteBrandBar from "../components/SiteBrandBar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
 import { listPublishedArticles } from "../lib/articleService";
 import "./NewsPage.css";
 
@@ -60,6 +62,7 @@ function NewsPage() {
 
   return (
     <div className="news-page">
+      <TopBar />
       <SiteBrandBar />
       <main>
         {/* =====================================================
@@ -220,6 +223,7 @@ function NewsPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

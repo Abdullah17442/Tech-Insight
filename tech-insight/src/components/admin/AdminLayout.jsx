@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import BrandLogo from "../BrandLogo";
+import Footer from "../Footer";
 import { supabase } from "../../lib/supabaseClient";
 
 function AdminLayout() {
@@ -44,6 +45,7 @@ function AdminLayout() {
       <main className="admin-main">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
