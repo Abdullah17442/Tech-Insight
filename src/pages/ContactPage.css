@@ -1,0 +1,415 @@
+/* =========================================================
+   CONTACT PAGE
+========================================================= */
+
+.contact-page {
+  min-height: 100vh;
+
+  background: var(--white);
+  color: var(--black);
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.contact-hero {
+  padding: 100px 0 110px;
+
+  border-bottom: 1px solid #ddd;
+}
+
+.contact-eyebrow {
+  display: inline-block;
+
+  margin-bottom: 25px;
+
+  color: var(--yellow);
+
+  font-size: 12px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+.contact-hero h1 {
+  margin: 0;
+
+  font-size: clamp(60px, 9vw, 110px);
+
+  line-height: 0.9;
+
+  letter-spacing: -5px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.contact-hero h1 span {
+  color: #777;
+}
+
+.contact-hero p {
+  max-width: 650px;
+
+  margin: 40px 0 0;
+
+  color: #555;
+
+  font-size: 20px;
+
+  line-height: 1.7;
+}
+
+/* =========================================================
+   CONTACT CONTENT
+========================================================= */
+
+.contact-content {
+  padding: 100px 0 120px;
+}
+
+.contact-grid {
+  display: grid;
+
+  grid-template-columns: 0.9fr 1.1fr;
+
+  gap: 100px;
+}
+
+/* =========================================================
+   CONTACT INFO
+========================================================= */
+
+.contact-info {
+  max-width: 500px;
+}
+
+.contact-label {
+  display: block;
+
+  margin-bottom: 25px;
+
+  color: var(--yellow);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+}
+
+.contact-info h2 {
+  margin: 0;
+
+  font-size: clamp(45px, 5vw, 70px);
+
+  line-height: 0.9;
+
+  letter-spacing: -3px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.contact-info > p {
+  margin: 35px 0 0;
+
+  color: #555;
+
+  font-size: 17px;
+
+  line-height: 1.8;
+}
+
+/* =========================================================
+   EMAIL
+========================================================= */
+
+.contact-email {
+  margin-top: 45px;
+
+  padding-top: 25px;
+
+  border-top: 1px solid #ccc;
+}
+
+.contact-email span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #777;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+.contact-email a {
+  color: var(--black);
+
+  font-size: 17px;
+
+  font-weight: 800;
+
+  text-decoration: none;
+}
+
+.contact-email a:hover {
+  color: var(--yellow);
+}
+
+/* =========================================================
+   CONTACT OPTIONS
+========================================================= */
+
+.contact-options {
+  border-top: 2px solid var(--black);
+}
+
+.contact-option {
+  display: grid;
+
+  grid-template-columns: 45px 1fr 30px;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 28px 0;
+
+  border-bottom: 1px solid #ccc;
+
+  color: var(--black);
+
+  text-decoration: none;
+
+  transition: padding 0.2s ease;
+}
+
+.contact-option:hover {
+  padding-left: 10px;
+}
+
+.contact-option > span {
+  color: var(--yellow);
+
+  font-size: 11px;
+
+  font-weight: 900;
+}
+
+.contact-option h3 {
+  margin: 0;
+
+  font-size: 20px;
+
+  font-weight: 900;
+
+  letter-spacing: -0.5px;
+
+  text-transform: uppercase;
+}
+
+.contact-option p {
+  margin: 8px 0 0;
+
+  color: #777;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.contact-option strong {
+  font-size: 20px;
+
+  font-weight: 400;
+}
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.contact-cta {
+  padding: 90px 0 100px;
+
+  background: var(--black);
+
+  color: var(--white);
+}
+
+.contact-cta .container {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 50px;
+}
+
+.contact-cta span {
+  display: block;
+
+  margin-bottom: 22px;
+
+  color: var(--yellow);
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+.contact-cta h2 {
+  margin: 0;
+
+  font-size: clamp(45px, 6vw, 80px);
+
+  line-height: 0.9;
+
+  letter-spacing: -4px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.contact-cta a {
+  flex-shrink: 0;
+
+  padding: 15px 22px;
+
+  background: var(--yellow);
+
+  color: var(--black);
+
+  font-size: 12px;
+
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  text-decoration: none;
+
+  text-transform: uppercase;
+}
+
+.contact-cta a:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+  .contact-hero {
+    padding: 75px 0 80px;
+  }
+
+  .contact-content {
+    padding: 75px 0 90px;
+  }
+
+  .contact-grid {
+    gap: 55px;
+  }
+
+  .contact-cta .container {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .contact-hero {
+    padding: 55px 0 65px;
+  }
+
+  .contact-hero h1 {
+    font-size: 58px;
+
+    letter-spacing: -3px;
+  }
+
+  .contact-hero p {
+    margin-top: 30px;
+
+    font-size: 17px;
+
+    line-height: 1.65;
+  }
+
+  .contact-content {
+    padding: 65px 0 75px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+
+    gap: 55px;
+  }
+
+  .contact-info h2 {
+    font-size: 48px;
+
+    letter-spacing: -2px;
+  }
+
+  .contact-info > p {
+    font-size: 16px;
+
+    line-height: 1.7;
+  }
+
+  .contact-option {
+    grid-template-columns: 35px 1fr 20px;
+
+    gap: 12px;
+
+    padding: 25px 0;
+  }
+
+  .contact-option h3 {
+    font-size: 17px;
+  }
+
+  .contact-option p {
+    font-size: 13px;
+  }
+
+  .contact-cta {
+    padding: 70px 0 80px;
+  }
+
+  .contact-cta h2 {
+    font-size: 52px;
+
+    letter-spacing: -3px;
+  }
+
+  .contact-cta a {
+    margin-top: 10px;
+  }
+}

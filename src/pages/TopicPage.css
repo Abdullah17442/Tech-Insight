@@ -1,0 +1,280 @@
+/* =========================================================
+   TOPIC PAGE
+========================================================= */
+
+.topic-page {
+  min-height: 100vh;
+
+  background: var(--white);
+  color: var(--black);
+}
+
+/* =========================================================
+   TOPIC HEADER
+========================================================= */
+
+.topic-header {
+  padding: 80px 0 75px;
+
+  border-bottom: 1px solid #ddd;
+}
+
+.topic-back {
+  display: inline-block;
+
+  margin-bottom: 45px;
+
+  color: #555;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.topic-back:hover {
+  color: var(--yellow);
+}
+
+.topic-eyebrow {
+  display: block;
+
+  margin-bottom: 18px;
+
+  color: var(--yellow);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+.topic-header h1 {
+  margin: 0;
+
+  font-size: clamp(52px, 8vw, 96px);
+
+  line-height: 0.95;
+
+  letter-spacing: -4px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.topic-header p {
+  max-width: 700px;
+
+  margin: 28px 0 0;
+
+  color: #555;
+
+  font-size: 18px;
+
+  line-height: 1.7;
+}
+
+/* =========================================================
+   TOPIC STORIES
+========================================================= */
+
+.topic-stories {
+  padding: 70px 0 120px;
+}
+
+.topic-section-heading {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 45px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 2px solid var(--black);
+}
+
+.topic-section-heading span:first-child {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: var(--yellow);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+}
+
+.topic-section-heading h2 {
+  margin: 0;
+
+  font-size: 42px;
+
+  line-height: 1;
+
+  letter-spacing: -2px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.topic-count {
+  color: #777;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   TOPIC GRID
+========================================================= */
+
+.topic-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 45px 30px;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.topic-empty {
+  padding: 100px 20px;
+
+  text-align: center;
+}
+
+.topic-empty h2 {
+  margin: 0 0 15px;
+
+  font-size: 42px;
+
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.topic-empty p {
+  margin: 0 0 30px;
+
+  color: #666;
+
+  font-size: 16px;
+}
+
+.topic-empty a {
+  color: var(--black);
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  text-decoration: none;
+
+  text-transform: uppercase;
+}
+
+.topic-empty a:hover {
+  color: var(--yellow);
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+  .topic-header {
+    padding: 65px 0 60px;
+  }
+
+  .topic-header h1 {
+    letter-spacing: -3px;
+  }
+
+  .topic-grid {
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 35px 20px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+  .topic-header {
+    padding: 55px 0 50px;
+  }
+
+  .topic-back {
+    margin-bottom: 35px;
+  }
+
+  .topic-header h1 {
+    font-size: 50px;
+
+    letter-spacing: -2px;
+  }
+
+  .topic-header p {
+    margin-top: 22px;
+
+    font-size: 16px;
+
+    line-height: 1.6;
+  }
+
+  .topic-stories {
+    padding: 50px 0 80px;
+  }
+
+  .topic-section-heading {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+    margin-bottom: 35px;
+  }
+
+  .topic-section-heading h2 {
+    font-size: 34px;
+  }
+
+  .topic-grid {
+    grid-template-columns: 1fr;
+
+    gap: 45px;
+  }
+
+  .topic-empty {
+    padding: 70px 15px;
+  }
+
+  .topic-empty h2 {
+    font-size: 34px;
+  }
+}
