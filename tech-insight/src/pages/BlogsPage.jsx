@@ -6,9 +6,9 @@ import SiteBrandBar from "../components/SiteBrandBar";
 import Footer from "../components/Footer";
 import TopBar from "../components/TopBar";
 import { listPublishedArticles } from "../lib/articleService";
-import "./NewsPage.css";
+import "./BlogsPage.css";
 
-function NewsPage() {
+function BlogsPage() {
   const [articles, setArticles] = useState(blogs);
   const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
@@ -61,7 +61,7 @@ function NewsPage() {
   const isFiltering = Boolean(search.trim()) || category !== "All topics";
 
   return (
-    <div className="news-page">
+    <div className="blogs-page">
       <TopBar />
       <SiteBrandBar />
       <main>
@@ -69,12 +69,12 @@ function NewsPage() {
             PAGE HEADER
         ===================================================== */}
 
-        <section className="news-header">
+        <section className="blogs-header">
           <div className="container">
             {loadError && <p role="status">{loadError}</p>}
-            <span className="news-eyebrow">TECH INSIDE</span>
+            <span className="blogs-eyebrow">TECH INSIDE</span>
 
-            <h1>Latest News</h1>
+            <h1>Latest Blogs</h1>
 
             <p>
               Technology, data centers, cloud, AI infrastructure,
@@ -88,12 +88,12 @@ function NewsPage() {
         ===================================================== */}
 
         {featuredBlog && !isFiltering && (
-          <section className="featured-news">
+          <section className="featured-blogs">
             <div className="container">
-              <article className="featured-news-card">
+              <article className="featured-blogs-card">
                 <Link
                   to={`/blog/${featuredBlog.slug}`}
-                  className="featured-news-image"
+                  className="featured-blogs-image"
                 >
                   {featuredBlog.image ? (
                     <img
@@ -105,7 +105,7 @@ function NewsPage() {
                   )}
                 </Link>
 
-                <div className="featured-news-content">
+                <div className="featured-blogs-content">
                   <Link
                     to={`/topics/${featuredBlog.category
                       .toLowerCase()
@@ -123,7 +123,7 @@ function NewsPage() {
 
                   <p>{featuredBlog.description}</p>
 
-                  <div className="featured-news-meta">
+                  <div className="featured-blogs-meta">
                     <span>{featuredBlog.type}</span>
                     <span>{featuredBlog.date}</span>
                     <span>{featuredBlog.readTime}</span>
@@ -145,9 +145,9 @@ function NewsPage() {
             ALL STORIES
         ===================================================== */}
 
-        <section className="all-news">
+        <section className="all-blogs">
           <div className="container">
-            <div className="news-section-heading">
+            <div className="blogs-section-heading">
               <div>
                 <span>MORE FROM TECH INSIDE</span>
                 <h2>All Stories</h2>
@@ -162,9 +162,9 @@ function NewsPage() {
               </span>
             </div>
 
-            <div className="news-filters" role="search">
-              <label className="news-search">
-                <span className="news-search-icon" aria-hidden="true">⌕</span>
+            <div className="blogs-filters" role="search">
+              <label className="blogs-search">
+                <span className="blogs-search-icon" aria-hidden="true">⌕</span>
                 <span className="visually-hidden">Search stories</span>
                 <input
                   type="search"
@@ -174,7 +174,7 @@ function NewsPage() {
                 />
               </label>
 
-              <label className="news-category-filter">
+              <label className="blogs-category-filter">
                 <span className="visually-hidden">Filter by topic</span>
                 <select
                   value={category}
@@ -190,7 +190,7 @@ function NewsPage() {
               {isFiltering && (
                 <button
                   type="button"
-                  className="news-filter-reset"
+                  className="blogs-filter-reset"
                   onClick={() => {
                     setSearch("");
                     setCategory("All topics");
@@ -201,7 +201,7 @@ function NewsPage() {
               )}
             </div>
 
-            <div className="news-grid">
+            <div className="blogs-grid">
               {(isFiltering ? filteredArticles : otherBlogs).map((blog) => (
                 <BlogCard
                   key={blog.id}
@@ -211,7 +211,7 @@ function NewsPage() {
             </div>
 
             {(isFiltering ? filteredArticles.length === 0 : articles.length === 0) && (
-              <div className="no-news">
+              <div className="no-blogs">
                 <h2>{isFiltering ? "No matching stories" : "No Stories Yet"}</h2>
                 <p>
                   {isFiltering
@@ -228,4 +228,4 @@ function NewsPage() {
   );
 }
 
-export default NewsPage;
+export default BlogsPage;

@@ -5,13 +5,11 @@ import BlogPage from "./pages/BlogPage";
 import TopicPage from "./pages/TopicPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
-import NewsPage from "./pages/NewsPage";
+import BlogsPage from "./pages/BlogsPage";
 import NotFound from "./pages/NotFound";
 
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-import EventManagement from "./pages/Admin/EventManagement";
-import CompanyManagement from "./pages/Admin/CompanyManagement";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
@@ -22,7 +20,7 @@ function App() {
 return ( <BrowserRouter> <Routes>
 {/* Public website */}
 <Route path="/" element={<Home />} />
-<Route path="/news" element={<NewsPage />} />
+<Route path="/blogs" element={<BlogsPage />} />
 <Route path="/blog/:slug" element={<BlogPage />} />
 <Route path="/topics/:slug" element={<TopicPage />} />
 <Route path="/about" element={<AboutPage />} />
@@ -34,14 +32,6 @@ return ( <BrowserRouter> <Routes>
     <Route element={<ProtectedRoute />}>
       <Route element={<AdminLayout />}>
         <Route path="/insight-vault576" element={<AdminDashboard />} />
-        <Route
-          path="/insight-vault576/events"
-          element={<EventManagement />}
-        />
-        <Route
-          path="/insight-vault576/companies"
-          element={<CompanyManagement />}
-        />
       </Route>
     </Route>
 

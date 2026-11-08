@@ -25,8 +25,10 @@ function AboutPage() {
             </h1>
 
             <p className="about-intro">
-              Tech Inside is a technology publication focused on the
-              infrastructure, systems and companies shaping the digital world.
+              Tech Inside explores the infrastructure, systems, and research
+              shaping the digital world—from the data centers, networks, cloud
+              platforms, and energy systems behind digital services to the
+              engineering teams that build them.
             </p>
           </div>
         </section>
@@ -51,17 +53,20 @@ function AboutPage() {
 
               <div className="about-text">
                 <p>
-                  Technology is more than the products and applications
-                  people interact with every day. Behind every digital
-                  service are data centers, networks, cloud platforms,
-                  energy systems, software and engineering teams.
+                  Behind every app, platform, and AI model are data centers,
+                  networks, cloud platforms, energy systems, and engineering
+                  teams. We look past product announcements to explain how
+                  these systems work and why they matter.
                 </p>
 
                 <p>
-                  Tech Inside explores those systems and the companies
-                  building them. We focus on the technology that powers
-                  the digital economy and the infrastructure that makes
-                  modern computing possible.
+                  We also follow the research methods redefining computing,
+                  including machine learning, deep learning, federated
+                  learning, generative AI, large language models, and agentic
+                  AI systems that can plan, reason, and act. We examine how
+                  these methods are built and deployed, the compute and data
+                  infrastructure behind them, and the questions they raise
+                  about privacy, security, reliability, and governance.
                 </p>
               </div>
             </div>
@@ -76,61 +81,63 @@ function AboutPage() {
           <div className="container">
             <div className="about-section-label">
               <span>02</span>
-              <p>WHAT WE COVER</p>
+              <p>WHAT WE EXPLORE</p>
             </div>
 
             <div className="coverage-grid">
               <div className="coverage-item">
                 <span>01</span>
-                <h3>Data Centers</h3>
+                <h3>Digital Infrastructure</h3>
                 <p>
-                  Servers, facilities, cooling, power systems and
-                  the infrastructure behind modern computing.
+                  Data centers, networks, cloud platforms, energy systems,
+                  and the engineering that keeps digital services running.
                 </p>
               </div>
 
               <div className="coverage-item">
                 <span>02</span>
-                <h3>AI Infrastructure</h3>
+                <h3>Computing Research</h3>
                 <p>
-                  GPUs, AI systems, compute infrastructure and the
-                  technology enabling the AI boom.
+                  Machine learning, deep and federated learning, generative
+                  AI, large language models, and agentic systems.
                 </p>
               </div>
 
               <div className="coverage-item">
                 <span>03</span>
-                <h3>Cloud</h3>
+                <h3>Building AI Systems</h3>
                 <p>
-                  Cloud platforms, distributed computing and the
-                  systems powering modern applications.
+                  How intelligent systems are developed, trained, and deployed,
+                  and the compute and data infrastructure that enables them.
                 </p>
               </div>
 
               <div className="coverage-item">
                 <span>04</span>
-                <h3>Cybersecurity</h3>
+                <h3>Real-World Applications</h3>
                 <p>
-                  Security technologies, threats, infrastructure
-                  protection and digital resilience.
+                  Intelligent systems in healthcare, autonomous vehicles,
+                  energy, finance, manufacturing, agriculture, education, and
+                  telecommunications—improving services and solving practical
+                  problems at scale.
                 </p>
               </div>
 
               <div className="coverage-item">
                 <span>05</span>
-                <h3>Energy</h3>
+                <h3>Industries in Transition</h3>
                 <p>
-                  The growing relationship between electricity,
-                  computing and digital infrastructure.
+                  Technology at work in transportation, retail, robotics, smart
+                  cities, and climate and environmental solutions.
                 </p>
               </div>
 
               <div className="coverage-item">
                 <span>06</span>
-                <h3>Technology Business</h3>
+                <h3>Cybersecurity & Governance</h3>
                 <p>
-                  Companies, markets and the business decisions
-                  shaping the technology industry.
+                  Privacy, security, reliability, and governance—and the
+                  business decisions shaping how technology is built and used.
                 </p>
               </div>
             </div>
@@ -161,19 +168,20 @@ function AboutPage() {
 
               <div className="approach-text">
                 <p>
-                  We believe technology coverage should explain how
-                  things actually work.
+                  Our approach is clear, technical, and independent. We explain
+                  how technology works and connect innovation to its real
+                  impact.
                 </p>
 
                 <p>
-                  Instead of focusing only on headlines, Tech Inside
-                  aims to provide context, explain complex systems in
-                  accessible language and examine the infrastructure
-                  behind major technology developments.
+                  Instead of chasing headlines, we provide context, break down
+                  complex systems in accessible language, and connect research
+                  and infrastructure to real-world applications.
                 </p>
 
                 <p>
-                  Our goal is to help readers understand not only
+                  Whether you are an engineer, researcher, student, or simply
+                  curious about technology, we help you understand not only
                   <strong> what is happening</strong>, but also
                   <strong> why it matters</strong>.
                 </p>
@@ -196,8 +204,8 @@ function AboutPage() {
               into technology.
             </h2>
 
-            <Link to="/news">
-              Explore Latest Stories →
+            <Link to="/blogs">
+              Explore Tech Inside Blogs →
             </Link>
           </div>
         </section>

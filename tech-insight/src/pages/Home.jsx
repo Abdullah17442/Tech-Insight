@@ -7,10 +7,13 @@ import TopBar from "../components/TopBar";
 import TopicsDropdown from "../components/TopicsDropdown";
 import blogs from "../data/blogs";
 import companies from "../data/companies";
-import { listPublishedArticles } from "../lib/articleService";
+import {
+  listPublishedArticles,
+  listUpcomingArticles,
+} from "../lib/articleService";
 import { listPublishedCompanies } from "../lib/companyService";
 import { listPublishedEvents } from "../lib/eventService";
-import { formatEventDate } from "../lib/eventUtils";
+import { formatEventDate, getLocalDateString } from "../lib/eventUtils";
 
 function Home() {
 const [articles, setArticles] = useState(blogs);
@@ -19,6 +22,9 @@ const [companyItems, setCompanyItems] = useState(companies);
 const [showAllCompanies, setShowAllCompanies] = useState(false);
 const [companyLoadError, setCompanyLoadError] = useState("");
 const [upcomingEvents, setUpcomingEvents] = useState([]);
+const [upcomingArticles, setUpcomingArticles] = useState([]);
+const [upcomingArticlesError, setUpcomingArticlesError] = useState("");
+const [upcomingArticlesLoading, setUpcomingArticlesLoading] = useState(true);
 const [eventLoadError, setEventLoadError] = useState("");
 const [eventsLoading, setEventsLoading] = useState(true);
 const latestBlog = articles[0];
@@ -35,6 +41,24 @@ const timer = setTimeout(() => {
           : "Published articles could not be refreshed from Supabase."
       );
     });
+}, 0);
+
+return () => clearTimeout(timer);
+}, []);
+
+useEffect(() => {
+const timer = setTimeout(() => {
+  listUpcomingArticles()
+    .then(setUpcomingArticles)
+    .catch((error) => {
+      console.error("Unable to load scheduled articles:", error);
+      setUpcomingArticlesError(
+        error instanceof Error
+          ? error.message
+          : "Scheduled articles could not be refreshed."
+      );
+    })
+    .finally(() => setUpcomingArticlesLoading(false));
 }, 0);
 
 return () => clearTimeout(timer);
@@ -76,7 +100,11 @@ return () => clearTimeout(timer);
 }, []);
 
 return ( <div className="site">
-<TopBar />
+<TopBar>
+  <span className="top-bar-eyebrow">
+    Technology · Infrastructure · Intelligence
+  </span>
+</TopBar>
 
   {/* HEADER / NAVIGATION */}
   <header className="site-header">
@@ -85,7 +113,7 @@ return ( <div className="site">
 
       <nav className="main-nav" aria-label="Main navigation">
         <Link to="/">Home</Link>
-        <Link to="/news">News</Link>
+        <Link to="/blogs">Blogs</Link>
 
         <TopicsDropdown />
 
@@ -99,10 +127,6 @@ return ( <div className="site">
   <section className="hero" id="home">
     <div className="container hero-grid">
       <div>
-        <span className="eyebrow">
-          Technology · Infrastructure · Intelligence
-        </span>
-
         <h1>
           The Technology
           <br />
@@ -126,8 +150,8 @@ return ( <div className="site">
           building it and why it matters.
         </p>
 
-        <Link to="/news" className="hero-link">
-          Explore Latest News →
+        <Link to="/blogs" className="hero-link">
+          Explore Latest Blogs →
         </Link>
       </div>
     </div>
@@ -138,9 +162,38 @@ return ( <div className="site">
     <div className="container">
       <SectionHeading title="Upcoming Blogs" label="What's Coming" />
 
+      {upcomingArticlesError && <p role="status">{upcomingArticlesError}</p>}
+
       {eventLoadError && <p role="status">{eventLoadError}</p>}
 
       <div className="events-grid">
+        {upcomingArticles.map((article) => {
+          const publicationDate = new Date(article.published_at);
+          const date = formatEventDate(getLocalDateString(publicationDate));
+          const time = new Intl.DateTimeFormat("en", {
+            hour: "numeric",
+            minute: "2-digit",
+          }).format(publicationDate);
+          return (
+            <article className="event-card" key={`article-${article.id}`}>
+              <div className="event-date">
+                <span>{date.month}</span>
+                <strong>{date.day}</strong>
+              </div>
+
+              <div className="event-content">
+                <div className="event-meta">
+                  <span>{article.category}</span>
+                  <span>{time}</span>
+                </div>
+
+                <h3>{article.title}</h3>
+                <p>{article.description}</p>
+              </div>
+            </article>
+          );
+        })}
+
         {upcomingEvents.map((event) => {
           const date = formatEventDate(event.event_date);
           return (
@@ -163,7 +216,12 @@ return ( <div className="site">
           );
         })}
       </div>
-      {!eventsLoading && !eventLoadError && upcomingEvents.length === 0 && (
+      {!eventsLoading &&
+        !upcomingArticlesLoading &&
+        !eventLoadError &&
+        !upcomingArticlesError &&
+        upcomingEvents.length === 0 &&
+        upcomingArticles.length === 0 && (
         <p className="events-empty-state">No events scheduled right now. Check back soon.</p>
       )}
     </div>
@@ -217,12 +275,12 @@ return ( <div className="site">
     </div>
   </section>
 
-  {/* RECENT STORIES / NEWS */}
-  <section className="latest" id="news">
+  {/* RECENT BLOGS */}
+  <section className="latest" id="blogs">
     <div className="container">
       <SectionHeading
-        title="Recent Stories"
-        label="What's Happening Now"
+        title="Recent Blogs"
+        label="Insights & Analysis"
       />
 
       {articleLoadError && <p role="status">{articleLoadError}</p>}

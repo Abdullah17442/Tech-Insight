@@ -84,6 +84,22 @@ test("requires a title and article content", () => {
   });
 });
 
+test("requires a future publication time for scheduled articles", () => {
+  const article = {
+    title: "Scheduled story",
+    content: "Article body",
+    status: "scheduled",
+    published_at: "2099-01-01T10:30",
+  };
+
+  assert.equal(validateArticleInput(article).valid, true);
+  assert.equal(
+    validateArticleInput({ ...article, published_at: "2000-01-01T10:30" })
+      .valid,
+    false
+  );
+});
+
 test("rejects article content that contains only empty formatting", () => {
   assert.equal(
     validateArticleInput({ title: "An article", content: "<p><br></p>" }).valid,
@@ -118,6 +134,22 @@ test("maps the editor fields to the Supabase blogs schema", () => {
   assert.equal(payload.status, "draft");
   assert.equal(payload.content, "Article body");
   assert.equal("company_name" in payload, false);
+});
+
+test("saves the scheduled publication time as an ISO timestamp", () => {
+  const localPublicationTime = "2099-01-01T10:30";
+  const payload = buildArticlePayload({
+    title: "Scheduled story",
+    content: "Article body",
+    status: "scheduled",
+    published_at: localPublicationTime,
+  });
+
+  assert.equal(payload.status, "scheduled");
+  assert.equal(
+    Date.parse(payload.published_at),
+    new Date(localPublicationTime).getTime()
+  );
 });
 
 test("rejects unsupported or oversized image uploads", () => {

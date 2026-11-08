@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import blogs from "../data/blogs";
-import { listPublishedArticles } from "../lib/articleService";
+import { listPublishedArticles, recordArticleView } from "../lib/articleService";
 import { sanitizeArticleHtml } from "../lib/articleUtils";
 import SiteBrandBar from "../components/SiteBrandBar";
 import Footer from "../components/Footer";
@@ -14,6 +14,7 @@ function BlogPage() {
   const [loadError, setLoadError] = useState("");
   const [readingProgress, setReadingProgress] = useState(0);
   const [shareMessage, setShareMessage] = useState("");
+  const lastCountedArticleId = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -48,6 +49,18 @@ function BlogPage() {
   }, []);
 
   const blog = articles.find((item) => item.slug === slug);
+
+  useEffect(() => {
+    if (loading || !blog?.id || lastCountedArticleId.current === blog.id) {
+      return;
+    }
+
+    lastCountedArticleId.current = blog.id;
+    recordArticleView(blog.id).catch((error) => {
+      console.error("Could not record article view:", error);
+    });
+  }, [blog?.id, loading]);
+
   const relatedArticles = useMemo(() => {
     if (!blog) {
       return [];
@@ -123,7 +136,7 @@ function BlogPage() {
         <main className="blog-not-found">
           <h1>Article Not Found</h1>
           <p>{loadError || "The article you're looking for does not exist."}</p>
-          <Link to="/news">← Back to News</Link>
+          <Link to="/blogs">← Back to Blogs</Link>
         </main>
       </div>
     );
@@ -201,7 +214,7 @@ function BlogPage() {
                     <span>KEEP EXPLORING</span>
                     <h2 id="related-heading">More stories for you</h2>
                   </div>
-                  <Link to="/news">View all stories <span aria-hidden="true">→</span></Link>
+                  <Link to="/blogs">View all blogs <span aria-hidden="true">→</span></Link>
                 </div>
                 <div className="blog-related-grid">
                   {relatedArticles.map((article) => (
@@ -231,7 +244,7 @@ function BlogPage() {
             )}
 
             <div className="blog-back">
-              <Link to="/news">← Back to Latest Stories</Link>
+              <Link to="/blogs">← Back to Latest Blogs</Link>
             </div>
           </div>
         </article>

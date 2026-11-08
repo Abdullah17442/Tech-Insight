@@ -53,8 +53,8 @@ function TopicPage() {
 
         <section className="topic-header">
           <div className="container">
-            <Link to="/news" className="topic-back">
-              ← Back to News
+            <Link to="/blogs" className="topic-back">
+              ← Back to Blogs
             </Link>
 
             <span className="topic-eyebrow">
@@ -65,7 +65,7 @@ function TopicPage() {
             {loadError && <p role="status">{loadError}</p>}
 
             <p>
-              Explore the latest Tech Inside stories,
+              Explore the latest Tech Inside blogs,
               analysis and explainers about {topicName}.
             </p>
           </div>
@@ -107,8 +107,8 @@ function TopicPage() {
                   topic yet.
                 </p>
 
-                <Link to="/news">
-                  Explore Latest News →
+                <Link to="/blogs">
+                  Explore Latest Blogs →
                 </Link>
               </div>
             )}

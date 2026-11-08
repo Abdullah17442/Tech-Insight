@@ -57,6 +57,20 @@ export function sortArticlesByPublicationDate(articles) {
   });
 }
 
+export function toLocalDateTimeInput(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 16);
+}
+
 export function validateArticleInput(article) {
   const plainContent = String(article?.content || "")
     .replace(/<[^>]*>/g, "")
@@ -68,6 +82,24 @@ export function validateArticleInput(article) {
       valid: false,
       message: "Title and article content are required.",
     };
+  }
+
+  if (!["draft", "published", "scheduled"].includes(article.status)) {
+    return { valid: false, message: "Choose a valid article status." };
+  }
+
+  if (article.status === "scheduled") {
+    const publicationDate = new Date(article.published_at);
+    if (
+      !article.published_at ||
+      Number.isNaN(publicationDate.getTime()) ||
+      publicationDate <= new Date()
+    ) {
+      return {
+        valid: false,
+        message: "Choose a valid publication date and time in the future.",
+      };
+    }
   }
 
   return { valid: true, message: "" };
@@ -258,7 +290,10 @@ export function buildArticlePayload(
     existingArticle?.slug ?? ""
   );
   const now = new Date().toISOString();
-  const status = article.status === "published" ? "published" : "draft";
+  const status = ["published", "scheduled"].includes(article.status)
+    ? article.status
+    : "draft";
+  const publicationDate = new Date(article.published_at);
 
   return {
     title,
@@ -272,9 +307,14 @@ export function buildArticlePayload(
     created_at: existingArticle?.created_at || now,
     updated_at: now,
     published_at:
-      status === "published"
-        ? existingArticle?.published_at || now
-        : null,
+      status === "scheduled"
+        ? publicationDate.toISOString()
+        : status === "published"
+          ? existingArticle?.status === "published" &&
+            existingArticle.published_at
+            ? existingArticle.published_at
+            : now
+          : null,
   };
 }
 
@@ -306,9 +346,13 @@ export function toArticleViewModel(article) {
     ? plainTextContent.split(/\s+/).filter(Boolean).length
     : 0;
   const displayDate = article.published_at || article.created_at;
+  const isDueScheduledArticle =
+    article.status === "scheduled" &&
+    Date.parse(article.published_at || "") <= Date.now();
 
   return {
     ...article,
+    status: isDueScheduledArticle ? "published" : article.status,
     description:
       article.subtitle ||
       plainTextContent.replace(/\s+/g, " ").slice(0, 180),

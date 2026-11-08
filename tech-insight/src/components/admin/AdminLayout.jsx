@@ -31,8 +31,6 @@ function AdminLayout() {
           <NavLink to="/insight-vault576" end>
             Articles
           </NavLink>
-          <NavLink to="/insight-vault576/events">Upcoming blogs</NavLink>
-          <NavLink to="/insight-vault576/companies">Companies</NavLink>
           <Link to="/" className="admin-view-site">
             View site
           </Link>

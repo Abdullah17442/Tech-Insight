@@ -1,10 +1,10 @@
 # Tech Insight
 
-Tech Insight is a React + Vite technology publication focused on the systems, companies, and infrastructure behind the digital economy. The project combines a public editorial website with article coverage, topic browsing, and an admin interface for managing content.
+Tech Insight is a React + Vite technology publication focused on the systems, companies, and infrastructure behind the digital economy. The project combines a public editorial website with blog coverage, topic browsing, and an admin interface for managing content.
 
 ## Project Snapshot
 
-- Public site for technology news, explainers, and infrastructure analysis
+- Public site for technology blogs, explainers, and infrastructure analysis
 - Topic-driven pages for data centers, AI infrastructure, cloud, cybersecurity, energy, and networking
 - Article detail pages with editorial-style layouts and category metadata
 - Newsletter functionality is temporarily disabled in the application
@@ -139,7 +139,7 @@ For the detailed project development guide, architecture decisions, database req
 
 **Tech Inside** is a technology publication platform focused on understanding the technology and infrastructure powering the digital world.
 
-The platform will publish technology news, explainers, analysis, company profiles, and data-driven content about the infrastructure and businesses behind modern technology.
+The platform publishes blogs, explainers, analysis, company profiles, and data-driven content about the infrastructure and businesses behind modern technology.
 
 ### Main Coverage Areas
 
@@ -208,7 +208,7 @@ The project is under active development. Before implementing new functionality, 
 The existing application includes or has been developed around the following routes:
 
 - `/` — Home
-- `/news` — News listing
+- `/blogs` — Blog listing
 - `/blog/:slug` — Blog/article details
 - `/topics/:slug` — Topic pages
 - `/about` — About page

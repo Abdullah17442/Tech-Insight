@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import whiteLogo from "../assets/White-Logo-without-bg.jfif";
+import logo from "../assets/Golden_Tech_Insight_Logo_bg_removed.png.png";
 
 function Footer({ id }) {
   return (
@@ -8,7 +8,7 @@ function Footer({ id }) {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link to="/" className="brand-logo logo">
-              <img src={whiteLogo} alt="Tech Insight — Beyond the Possible" />
+              <img src={logo} alt="Tech Insight — Beyond the Possible" />
             </Link>
             <p>
               Understanding the technology, infrastructure and
@@ -31,7 +31,7 @@ function Footer({ id }) {
             <h4>Explore</h4>
             <ul>
               <li><Link to="/#companies">Companies</Link></li>
-              <li><Link to="/news">Recent Stories</Link></li>
+              <li><Link to="/blogs">Latest Blogs</Link></li>
             </ul>
           </div>
 

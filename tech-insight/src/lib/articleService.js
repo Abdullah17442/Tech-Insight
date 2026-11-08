@@ -48,19 +48,132 @@ export async function listAdminArticles() {
   return (data || []).map(toArticleViewModel);
 }
 
+export async function listAdminArticleViewCounts() {
+  if (demoMode) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("article_view_counts")
+    .select("article_id, total_views");
+
+  if (error) {
+    if (
+      error?.code === "42P01" ||
+      error?.code === "PGRST205" ||
+      /article_view_counts.*does not exist|could not find the table/i.test(
+        error?.message || ""
+      )
+    ) {
+      throw new Error(
+        "Article view analytics are not installed. Apply supabase/migrations/20261108130000_article_view_analytics.sql."
+      );
+    }
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function listAdminArticleDailyViewCounts(date) {
+  if (demoMode) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("article_daily_view_counts")
+    .select("article_id, total_views")
+    .eq("view_date", date);
+
+  if (error) {
+    if (
+      error?.code === "42P01" ||
+      error?.code === "PGRST205" ||
+      /article_daily_view_counts.*does not exist|could not find the table/i.test(
+        error?.message || ""
+      )
+    ) {
+      throw new Error(
+        "Daily article view analytics are not installed. Apply supabase/migrations/20261108140000_article_view_analytics_daily.sql."
+      );
+    }
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function resetAdminArticleViews() {
+  if (demoMode) {
+    throw new Error("Article view analytics require a configured Supabase project.");
+  }
+
+  const { error } = await supabase.rpc("reset_article_views");
+  if (error) {
+    if (
+      error?.code === "PGRST202" ||
+      error?.code === "42883" ||
+      /function .*reset_article_views.* does not exist/i.test(
+        error?.message || ""
+      )
+    ) {
+      throw new Error(
+        "The view reset action is not installed. Apply supabase/migrations/20261108140000_article_view_analytics_daily.sql."
+      );
+    }
+    throw error;
+  }
+}
+
+export async function recordArticleView(articleId) {
+  const isUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      String(articleId)
+    );
+  if (demoMode || !isUuid) {
+    return;
+  }
+
+  const { error } = await supabase.rpc("record_article_view", {
+    p_article_id: articleId,
+  });
+
+  if (error) {
+    if (
+      error?.code === "PGRST202" ||
+      error?.code === "42883" ||
+      /function .*record_article_view.* does not exist/i.test(
+        error?.message || ""
+      )
+    ) {
+      throw new Error(
+        "Article view tracking is not installed. Apply supabase/migrations/20261108130000_article_view_analytics.sql."
+      );
+    }
+    throw error;
+  }
+}
+
 export async function listPublishedArticles() {
   if (demoMode) {
+    const now = Date.now();
     return sortArticlesByPublicationDate(
       getStoredArticles()
-        .filter((article) => article.status === "published")
+        .filter(
+          (article) =>
+            article.status === "published" ||
+            (article.status === "scheduled" &&
+              Date.parse(article.published_at || "") <= now)
+        )
         .map(toArticleViewModel)
     );
   }
 
+  const now = new Date().toISOString();
   const { data, error } = await supabase
     .from("blogs")
     .select(ARTICLE_COLUMNS)
-    .eq("status", "published")
+    .or(`status.eq.published,and(status.eq.scheduled,published_at.lte.${now})`)
     .order("published_at", { ascending: false });
 
   if (error) {
@@ -71,6 +184,54 @@ export async function listPublishedArticles() {
   return sortArticlesByPublicationDate(
     (articles.length ? articles : getDefaultArticles()).map(toArticleViewModel)
   );
+}
+
+export async function listUpcomingArticles() {
+  if (demoMode) {
+    const now = Date.now();
+    return getStoredArticles()
+      .filter(
+        (article) =>
+          article.status === "scheduled" &&
+          Date.parse(article.published_at || "") > now
+      )
+      .sort(
+        (first, second) =>
+          Date.parse(first.published_at) - Date.parse(second.published_at)
+      )
+      .map(toArticleViewModel);
+  }
+
+  const { data, error } = await supabase.rpc("list_upcoming_blogs");
+  if (error) {
+    if (
+      error?.code === "PGRST202" ||
+      error?.code === "42883" ||
+      /function .*list_upcoming_blogs.* does not exist/i.test(
+        error?.message || ""
+      )
+    ) {
+      throw new Error(
+        "The Supabase scheduled articles function is missing. Apply supabase/migrations/20261104120000_scheduled_articles.sql."
+      );
+    }
+    throwDatabaseError(error);
+  }
+
+  return (data || []).map((article) => ({
+    ...article,
+    description: article.subtitle || "",
+    image: article.image_url || "",
+    company: article.company || "",
+    type: "Scheduled article",
+    date: article.published_at
+      ? new Date(article.published_at).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "",
+  }));
 }
 
 export async function uploadArticleImage(file) {

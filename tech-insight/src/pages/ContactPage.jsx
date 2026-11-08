@@ -96,7 +96,7 @@ function ContactPage() {
                   <span>02</span>
 
                   <div>
-                    <h3>News & Tips</h3>
+                    <h3>Stories & Tips</h3>
 
                     <p>
                       Have a technology story,
@@ -163,8 +163,8 @@ function ContactPage() {
               </h2>
             </div>
 
-            <Link to="/news">
-              Explore Latest News →
+            <Link to="/blogs">
+              Explore Latest Blogs →
             </Link>
           </div>
         </section>
