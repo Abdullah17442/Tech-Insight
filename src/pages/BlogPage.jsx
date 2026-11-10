@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import blogs from "../data/blogs";
-import { listPublishedArticles } from "../lib/articleService";
+import { listPublishedArticles, recordArticleView } from "../lib/articleService";
 import { sanitizeArticleHtml } from "../lib/articleUtils";
 import SiteBrandBar from "../components/SiteBrandBar";
 import Footer from "../components/Footer";
@@ -14,6 +14,7 @@ function BlogPage() {
   const [loadError, setLoadError] = useState("");
   const [readingProgress, setReadingProgress] = useState(0);
   const [shareMessage, setShareMessage] = useState("");
+  const lastCountedArticleId = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -48,6 +49,18 @@ function BlogPage() {
   }, []);
 
   const blog = articles.find((item) => item.slug === slug);
+
+  useEffect(() => {
+    if (loading || !blog?.id || lastCountedArticleId.current === blog.id) {
+      return;
+    }
+
+    lastCountedArticleId.current = blog.id;
+    recordArticleView(blog.id).catch((error) => {
+      console.error("Could not record article view:", error);
+    });
+  }, [blog?.id, loading]);
+
   const relatedArticles = useMemo(() => {
     if (!blog) {
       return [];

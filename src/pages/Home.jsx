@@ -100,7 +100,11 @@ return () => clearTimeout(timer);
 }, []);
 
 return ( <div className="site">
-<TopBar />
+<TopBar>
+  <span className="top-bar-eyebrow">
+    Technology · Infrastructure · Intelligence
+  </span>
+</TopBar>
 
   {/* HEADER / NAVIGATION */}
   <header className="site-header">
@@ -123,10 +127,6 @@ return ( <div className="site">
   <section className="hero" id="home">
     <div className="container hero-grid">
       <div>
-        <span className="eyebrow">
-          Technology · Infrastructure · Intelligence
-        </span>
-
         <h1>
           The Technology
           <br />

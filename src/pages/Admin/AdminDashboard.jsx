@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   deleteArticle,
   listAdminArticles,
+  listAdminArticleDailyViewCounts,
+  listAdminArticleViewCounts,
+  resetAdminArticleViews,
   saveArticle,
 } from "../../lib/articleService";
 import { listAdminCompanies, saveCompany } from "../../lib/companyService";
@@ -32,6 +35,14 @@ function AdminDashboard() {
   const [companiesLoading, setCompaniesLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [analyticsError, setAnalyticsError] = useState("");
+  const [dailyViews, setDailyViews] = useState([]);
+  const [dailyViewsLoading, setDailyViewsLoading] = useState(true);
+  const [selectedViewDate, setSelectedViewDate] = useState(
+    () => new Date().toISOString().slice(0, 10)
+  );
+  const dailyViewsRequestId = useRef(0);
+  const [resettingViews, setResettingViews] = useState(false);
   const [companyLoadError, setCompanyLoadError] = useState("");
   const [formData, setFormData] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
@@ -46,7 +57,22 @@ function AdminDashboard() {
     setError("");
 
     try {
-      setArticles(await listAdminArticles());
+      const [articleItems, viewCounts] = await Promise.all([
+        listAdminArticles(),
+        listAdminArticleViewCounts(),
+      ]);
+      const viewsByArticleId = new Map(
+        viewCounts.map(({ article_id, total_views }) => [
+          article_id,
+          Number(total_views),
+        ])
+      );
+      setArticles(
+        articleItems.map((article) => ({
+          ...article,
+          total_views: viewsByArticleId.get(article.id) || 0,
+        }))
+      );
     } catch (loadError) {
       console.error("Unable to load articles:", loadError);
       setError(loadError?.message || "Unable to load articles.");
@@ -68,6 +94,31 @@ function AdminDashboard() {
     }
   }, []);
 
+  const fetchDailyViews = useCallback(async () => {
+    const requestId = ++dailyViewsRequestId.current;
+    setAnalyticsError("");
+    setDailyViewsLoading(true);
+    try {
+      const viewCounts =
+        await listAdminArticleDailyViewCounts(selectedViewDate);
+      if (requestId === dailyViewsRequestId.current) {
+        setDailyViews(viewCounts);
+      }
+    } catch (loadError) {
+      if (requestId !== dailyViewsRequestId.current) {
+        return;
+      }
+      console.error("Unable to load daily article views:", loadError);
+      setAnalyticsError(
+        loadError?.message || "Unable to load daily article views."
+      );
+    } finally {
+      if (requestId === dailyViewsRequestId.current) {
+        setDailyViewsLoading(false);
+      }
+    }
+  }, [selectedViewDate]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       void fetchArticles();
@@ -76,6 +127,14 @@ function AdminDashboard() {
 
     return () => clearTimeout(timer);
   }, [fetchArticles, fetchCompanies]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchDailyViews();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [fetchDailyViews]);
 
   const publishedCount = useMemo(
     () => articles.filter((article) => article.status === "published").length,
@@ -86,6 +145,59 @@ function AdminDashboard() {
     () => articles.filter((article) => article.status === "draft").length,
     [articles]
   );
+
+  const totalViews = useMemo(
+    () => articles.reduce((total, article) => total + article.total_views, 0),
+    [articles]
+  );
+
+  const dailyViewsByArticleId = useMemo(
+    () =>
+      new Map(
+        dailyViews.map(({ article_id, total_views }) => [
+          article_id,
+          Number(total_views),
+        ])
+      ),
+    [dailyViews]
+  );
+
+  const selectedDateTotalViews = useMemo(
+    () =>
+      dailyViews.reduce(
+        (total, article) => total + Number(article.total_views),
+        0
+      ),
+    [dailyViews]
+  );
+
+  async function handleResetViews() {
+    if (
+      !window.confirm(
+        "Reset all lifetime and daily article view counts? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    setResettingViews(true);
+    setError("");
+    setAnalyticsError("");
+    setNotice("");
+
+    try {
+      await resetAdminArticleViews();
+      await Promise.all([fetchArticles(), fetchDailyViews()]);
+      setNotice("All article view counts have been reset.");
+    } catch (resetError) {
+      console.error("Could not reset article views:", resetError);
+      setAnalyticsError(
+        resetError?.message || "Could not reset article views."
+      );
+    } finally {
+      setResettingViews(false);
+    }
+  }
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -306,7 +418,52 @@ function AdminDashboard() {
           <span>Drafts</span>
           <strong>{draftCount}</strong>
         </div>
+
+        <div className="admin-stat-card admin-stat-card-views">
+          <span>Total views</span>
+          <strong>{totalViews.toLocaleString()}</strong>
+        </div>
       </div>
+
+      <section className="admin-panel admin-view-analytics">
+        <div className="admin-section-heading">
+          <div>
+            <span className="admin-kicker">TRAFFIC</span>
+            <h2>Daily article views</h2>
+            <p>
+              {selectedDateTotalViews.toLocaleString()} views on{" "}
+              {selectedViewDate} (UTC)
+            </p>
+          </div>
+          <div className="admin-view-analytics-controls">
+            <label className="admin-view-date">
+              <span>Date (UTC)</span>
+              <input
+                type="date"
+                value={selectedViewDate}
+                onChange={(event) => {
+                  if (event.target.value) {
+                    setSelectedViewDate(event.target.value);
+                  }
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              className="admin-secondary-button admin-reset-views-button"
+              onClick={() => void handleResetViews()}
+              disabled={resettingViews || loading}
+            >
+              {resettingViews ? "Resetting..." : "Reset all views"}
+            </button>
+          </div>
+        </div>
+        {analyticsError && (
+          <div className="admin-error" role="alert">{analyticsError}</div>
+        )}
+        {dailyViewsLoading && <p className="admin-loading">Loading daily views...</p>}
+        {notice && <p className="admin-notice" role="status">{notice}</p>}
+      </section>
 
       <section className="admin-panel admin-article-form">
         <div className="admin-section-heading">
@@ -510,6 +667,8 @@ function AdminDashboard() {
                 <tr>
                   <th>Title</th>
                   <th>Category</th>
+                  <th>Total views</th>
+                  <th>Views on date</th>
                   <th>Status</th>
                   <th>Publication</th>
                   <th>Action</th>
@@ -521,6 +680,12 @@ function AdminDashboard() {
                   <tr key={article.id}>
                     <td className="admin-article-title">{article.title}</td>
                     <td>{article.category}</td>
+                    <td>{article.total_views.toLocaleString()}</td>
+                    <td>
+                      {dailyViewsLoading
+                        ? "—"
+                        : (dailyViewsByArticleId.get(article.id) || 0).toLocaleString()}
+                    </td>
                     <td>
                       <span className={`admin-status admin-status-${article.status}`}>{article.status}</span>
                     </td>
