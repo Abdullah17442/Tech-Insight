@@ -1,10 +1,34 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import blogs from "../data/blogs";
 import BlogCard from "../components/BlogCard";
+import SiteBrandBar from "../components/SiteBrandBar";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
+import { listPublishedArticles } from "../lib/articleService";
 import "./TopicPage.css";
 
 function TopicPage() {
   const { slug } = useParams();
+  const [articles, setArticles] = useState(blogs);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      listPublishedArticles()
+        .then(setArticles)
+        .catch((error) => {
+          console.error("Unable to load published articles:", error);
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : "Published articles could not be refreshed from Supabase."
+          );
+        });
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const topicName = slug
     ? slug
@@ -13,13 +37,15 @@ function TopicPage() {
         .join(" ")
     : "";
 
-  const topicBlogs = blogs.filter(
+  const topicBlogs = articles.filter(
     (blog) =>
       blog.category.toLowerCase().replace(/\s+/g, "-") === slug
   );
 
   return (
     <div className="topic-page">
+      <TopBar />
+      <SiteBrandBar />
       <main>
         {/* =====================================================
             TOPIC HEADER
@@ -27,8 +53,8 @@ function TopicPage() {
 
         <section className="topic-header">
           <div className="container">
-            <Link to="/news" className="topic-back">
-              ← Back to News
+            <Link to="/blogs" className="topic-back">
+              ← Back to Blogs
             </Link>
 
             <span className="topic-eyebrow">
@@ -36,9 +62,10 @@ function TopicPage() {
             </span>
 
             <h1>{topicName}</h1>
+            {loadError && <p role="status">{loadError}</p>}
 
             <p>
-              Explore the latest Tech Inside stories,
+              Explore the latest Tech Inside blogs,
               analysis and explainers about {topicName}.
             </p>
           </div>
@@ -80,14 +107,15 @@ function TopicPage() {
                   topic yet.
                 </p>
 
-                <Link to="/news">
-                  Explore Latest News →
+                <Link to="/blogs">
+                  Explore Latest Blogs →
                 </Link>
               </div>
             )}
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

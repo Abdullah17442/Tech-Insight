@@ -479,43 +479,6 @@ function Home() {
         </div>
       </section>
 
-      {/* NEWSLETTER */}
-      <section className="newsletter">
-        <div className="container newsletter-inner">
-
-          <div>
-            <h2>
-              Understand
-              <br />
-              What's Next.
-            </h2>
-
-            <p>
-              Get the latest technology infrastructure stories,
-              explainers and analysis from Tech Inside.
-            </p>
-          </div>
-
-          <form
-            className="newsletter-form"
-            onSubmit={(event) =>
-              event.preventDefault()
-            }
-          >
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              aria-label="Email address"
-            />
-
-            <button type="submit">
-              Subscribe
-            </button>
-          </form>
-
-        </div>
-      </section>
-
       {/* FOOTER / CONTACT */}
       <footer id="contact">
         <div className="container">

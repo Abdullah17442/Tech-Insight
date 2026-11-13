@@ -1,0 +1,9 @@
+About Tech Inside
+
+Tech Inside is a technology publication focused on the infrastructure, systems, and research shaping the digital world. Behind every app, platform, and AI model are data centers, networks, cloud platforms, energy systems, and the engineering teams who build them. We look past the product announcements to explain how these systems actually work and why they matter.
+
+Our coverage spans data centers, AI infrastructure, cloud computing, cybersecurity, energy, and the business decisions driving the technology industry. Alongside this, we follow the advanced research methods redefining what computing can do, including machine learning, deep learning, federated learning, generative AI, large language models, and agentic AI systems that can plan, reason, and act on their own. We examine how these methods are developed, trained, and deployed, along with the compute and data infrastructure that makes them possible, and the questions they raise around privacy, security, reliability, and governance.
+
+We also explore how these technologies move from research into real-world use. From healthcare, autonomous vehicles, and the power sector to finance, manufacturing, agriculture, education, telecommunications, transportation, retail, robotics, smart cities, and climate and environmental solutions, we look at how intelligent systems are transforming industries, improving services, and solving practical problems at scale.
+
+Across research, infrastructure, and real-world applications, our approach is clear, technical, and independent. Instead of chasing headlines, we provide context, break down complex systems in accessible language, and connect innovation to its real impact. Whether you are an engineer, researcher, student, or simply curious about where technology is heading, Tech Inside helps you understand not only what is happening, but why it matters.

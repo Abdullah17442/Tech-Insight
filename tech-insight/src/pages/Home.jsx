@@ -1,145 +1,121 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../App.css";
+import BrandLogo from "../components/BrandLogo";
+import CompanyLogo from "../components/CompanyLogo";
+import Footer from "../components/Footer";
+import TopBar from "../components/TopBar";
+import TopicsDropdown from "../components/TopicsDropdown";
 import blogs from "../data/blogs";
 import companies from "../data/companies";
-import { supabase } from "../lib/supabaseClient";
+import {
+  listPublishedArticles,
+  listUpcomingArticles,
+} from "../lib/articleService";
+import { listPublishedCompanies } from "../lib/companyService";
+import { listPublishedEvents } from "../lib/eventService";
+import { formatEventDate, getLocalDateString } from "../lib/eventUtils";
 
 function Home() {
-const [email, setEmail] = useState("");
-const [newsletterMessage, setNewsletterMessage] = useState("");
-const [newsletterStatus, setNewsletterStatus] = useState("");
-const [newsletterLoading, setNewsletterLoading] = useState(false);
+const [articles, setArticles] = useState(blogs);
+const [articleLoadError, setArticleLoadError] = useState("");
+const [companyItems, setCompanyItems] = useState(companies);
+const [showAllCompanies, setShowAllCompanies] = useState(false);
+const [companyLoadError, setCompanyLoadError] = useState("");
+const [upcomingEvents, setUpcomingEvents] = useState([]);
+const [upcomingArticles, setUpcomingArticles] = useState([]);
+const [upcomingArticlesError, setUpcomingArticlesError] = useState("");
+const [upcomingArticlesLoading, setUpcomingArticlesLoading] = useState(true);
+const [eventLoadError, setEventLoadError] = useState("");
+const [eventsLoading, setEventsLoading] = useState(true);
+const latestBlog = articles[0];
 
-const upcomingEvents = [
-{
-date: "OCT 15",
-type: "Technology Event",
-title: "AI Infrastructure Summit 2026",
-location: "Global",
-description:
-"A look at the companies, technologies and infrastructure shaping the next generation of AI systems.",
-},
-{
-date: "OCT 22",
-type: "Data Center Event",
-title: "Data Center Infrastructure Forum",
-location: "Global",
-description:
-"Industry leaders discuss data centers, power, cooling, networking and the future of digital infrastructure.",
-},
-{
-date: "NOV 05",
-type: "Industry Event",
-title: "Cloud & Digital Infrastructure Conference",
-location: "Global",
-description:
-"Exploring cloud infrastructure, connectivity, compute capacity and the evolving digital economy.",
-},
-];
+useEffect(() => {
+const timer = setTimeout(() => {
+  listPublishedArticles()
+    .then(setArticles)
+    .catch((error) => {
+      console.error("Unable to load published articles:", error);
+      setArticleLoadError(
+        error instanceof Error
+          ? error.message
+          : "Published articles could not be refreshed from Supabase."
+      );
+    });
+}, 0);
 
-const topics = [
-{ number: "01", title: "Data Centers" },
-{ number: "02", title: "AI Infrastructure" },
-{ number: "03", title: "Cloud" },
-{ number: "04", title: "Cybersecurity" },
-{ number: "05", title: "Energy" },
-{ number: "06", title: "Networking" },
-{ number: "07", title: "Technology" },
-];
+return () => clearTimeout(timer);
+}, []);
 
-async function handleNewsletterSubmit(event) {
-event.preventDefault();
+useEffect(() => {
+const timer = setTimeout(() => {
+  listUpcomingArticles()
+    .then(setUpcomingArticles)
+    .catch((error) => {
+      console.error("Unable to load scheduled articles:", error);
+      setUpcomingArticlesError(
+        error instanceof Error
+          ? error.message
+          : "Scheduled articles could not be refreshed."
+      );
+    })
+    .finally(() => setUpcomingArticlesLoading(false));
+}, 0);
 
-const normalizedEmail = email.trim().toLowerCase();
+return () => clearTimeout(timer);
+}, []);
 
-if (!normalizedEmail) {
-  setNewsletterStatus("error");
-  setNewsletterMessage("Please enter your email address.");
-  return;
-}
+useEffect(() => {
+const timer = setTimeout(() => {
+  listPublishedCompanies()
+    .then(setCompanyItems)
+    .catch((error) => {
+      console.error("Unable to load companies:", error);
+      setCompanyLoadError(
+        error instanceof Error ? error.message : "Companies could not be refreshed."
+      );
+    });
+}, 0);
 
-setNewsletterLoading(true);
-setNewsletterMessage("");
-setNewsletterStatus("");
+return () => clearTimeout(timer);
+}, []);
 
-try {
-  const { data, error } = await supabase.functions.invoke(
-    "subscribe-newsletter",
-    {
-      body: { email: normalizedEmail },
-    }
-  );
+useEffect(() => {
+const timer = setTimeout(() => {
+  listPublishedEvents()
+    .then(setUpcomingEvents)
+    .catch((error) => {
+      console.error("Unable to load upcoming blogs:", error);
+      setEventLoadError(
+        error instanceof Error
+          ? error.message
+          : "Upcoming blogs could not be refreshed."
+      );
+    })
+    .finally(() => {
+      setEventsLoading(false);
+    });
+}, 0);
 
-  if (error) {
-    throw error;
-  }
-
-  if (data?.error) {
-    throw new Error(data.error);
-  }
-
-  setNewsletterStatus("success");
-  setNewsletterMessage(
-    data?.message ||
-      "Please check your inbox for a confirmation email."
-  );
-  setEmail("");
-} catch (error) {
-  console.error("Newsletter subscription failed:", error);
-
-  setNewsletterStatus("error");
-  setNewsletterMessage(
-    error instanceof Error
-      ? error.message
-      : "Something went wrong. Please try again."
-  );
-} finally {
-  setNewsletterLoading(false);
-}
-
-
-}
+return () => clearTimeout(timer);
+}, []);
 
 return ( <div className="site">
-{/* TOP BAR */} <div className="top-bar"> <div className="container top-bar-inner"> <span>TECH INSIDE — UNDERSTANDING THE DIGITAL WORLD</span> <span>DATA CENTERS · AI · CLOUD · INFRASTRUCTURE</span> </div> </div>
+<TopBar>
+  <span className="top-bar-eyebrow">
+    Technology · Infrastructure · Intelligence
+  </span>
+</TopBar>
 
-```
   {/* HEADER / NAVIGATION */}
   <header className="site-header">
     <div className="container header-inner">
-      <Link to="/" className="logo">
-        <div className="logo-mark">TI</div>
-        <div className="logo-text">
-          TECH INSIDE
-          <small>TECHNOLOGY &amp; INFRASTRUCTURE</small>
-        </div>
-      </Link>
+      <BrandLogo className="logo" transparent />
 
       <nav className="main-nav" aria-label="Main navigation">
         <Link to="/">Home</Link>
-        <Link to="/news">News</Link>
+        <Link to="/blogs">Blogs</Link>
 
-        <div className="nav-dropdown">
-          <button className="nav-dropdown-btn" type="button">
-            Topics
-            <span className="dropdown-arrow">⌄</span>
-          </button>
-
-          <div className="dropdown-menu">
-            {topics.map((topic) => (
-              <Link
-                to={`/topics/${topic.title
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
-                key={topic.number}
-              >
-                <span>{topic.number}</span>
-                {topic.title}
-              </Link>
-            ))}
-          </div>
-        </div>
+        <TopicsDropdown />
 
         <Link to="/contact">Contact</Link>
         <Link to="/about">About</Link>
@@ -151,10 +127,6 @@ return ( <div className="site">
   <section className="hero" id="home">
     <div className="container hero-grid">
       <div>
-        <span className="eyebrow">
-          Technology · Infrastructure · Intelligence
-        </span>
-
         <h1>
           The Technology
           <br />
@@ -178,8 +150,8 @@ return ( <div className="site">
           building it and why it matters.
         </p>
 
-        <Link to="/news" className="hero-link">
-          Explore Latest News →
+        <Link to="/blogs" className="hero-link">
+          Explore Latest Blogs →
         </Link>
       </div>
     </div>
@@ -188,28 +160,70 @@ return ( <div className="site">
   {/* UPCOMING EVENTS */}
   <section className="events-section">
     <div className="container">
-      <SectionHeading title="Upcoming Events" label="What's Coming" />
+      <SectionHeading title="Upcoming Blogs" label="What's Coming" />
+
+      {upcomingArticlesError && <p role="status">{upcomingArticlesError}</p>}
+
+      {eventLoadError && <p role="status">{eventLoadError}</p>}
 
       <div className="events-grid">
-        {upcomingEvents.map((event) => (
-          <article className="event-card" key={event.title}>
-            <div className="event-date">
-              <span>{event.date.split(" ")[0]}</span>
-              <strong>{event.date.split(" ")[1]}</strong>
-            </div>
-
-            <div className="event-content">
-              <div className="event-meta">
-                <span>{event.type}</span>
-                <span>{event.location}</span>
+        {upcomingArticles.map((article) => {
+          const publicationDate = new Date(article.published_at);
+          const date = formatEventDate(getLocalDateString(publicationDate));
+          const time = new Intl.DateTimeFormat("en", {
+            hour: "numeric",
+            minute: "2-digit",
+          }).format(publicationDate);
+          return (
+            <article className="event-card" key={`article-${article.id}`}>
+              <div className="event-date">
+                <span>{date.month}</span>
+                <strong>{date.day}</strong>
               </div>
 
-              <h3>{event.title}</h3>
-              <p>{event.description}</p>
-            </div>
-          </article>
-        ))}
+              <div className="event-content">
+                <div className="event-meta">
+                  <span>{article.category}</span>
+                  <span>{time}</span>
+                </div>
+
+                <h3>{article.title}</h3>
+                <p>{article.description}</p>
+              </div>
+            </article>
+          );
+        })}
+
+        {upcomingEvents.map((event) => {
+          const date = formatEventDate(event.event_date);
+          return (
+            <article className="event-card" key={event.id}>
+              <div className="event-date">
+                <span>{date.month}</span>
+                <strong>{date.day}</strong>
+              </div>
+
+              <div className="event-content">
+                <div className="event-meta">
+                  <span>{event.type}</span>
+                  <span>{event.company_name}</span>
+                </div>
+
+                <h3>{event.title}</h3>
+                <p>{event.description}</p>
+              </div>
+            </article>
+          );
+        })}
       </div>
+      {!eventsLoading &&
+        !upcomingArticlesLoading &&
+        !eventLoadError &&
+        !upcomingArticlesError &&
+        upcomingEvents.length === 0 &&
+        upcomingArticles.length === 0 && (
+        <p className="events-empty-state">No events scheduled right now. Check back soon.</p>
+      )}
     </div>
   </section>
 
@@ -219,18 +233,32 @@ return ( <div className="site">
       <SectionHeading title="Latest Blog" label="Core Coverage" />
 
       <div className="spotlight-grid">
-        <div className="spotlight-main">
-          <span className="category">Featured Infrastructure</span>
-
-          <h3>
-            Inside The Infrastructure Powering The Digital Economy
-          </h3>
-
-          <p>
-            Explore how hyperscale, colocation, enterprise and
-            AI-focused facilities are designed, powered, cooled
-            and connected.
-          </p>
+        <div className={`spotlight-main${latestBlog?.image ? " spotlight-main-with-image" : ""}`}>
+          {latestBlog?.image && (
+            <img className="spotlight-image" src={latestBlog.image} alt="" />
+          )}
+          {latestBlog ? (
+            <>
+              <span className="category">{latestBlog.category}</span>
+              <h3>
+                <Link to={`/blog/${latestBlog.slug}`}>{latestBlog.title}</Link>
+              </h3>
+              <p>{latestBlog.description}</p>
+              <div className="spotlight-meta">
+                <span>{latestBlog.date}</span>
+                <span>{latestBlog.readTime}</span>
+              </div>
+              <Link className="spotlight-link" to={`/blog/${latestBlog.slug}`}>
+                Read the latest blog <span aria-hidden="true">→</span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="category">Latest Blog</span>
+              <h3>New stories are on the way</h3>
+              <p>Published articles will appear here as soon as they are available.</p>
+            </>
+          )}
         </div>
 
         <div className="spotlight-stat">
@@ -247,16 +275,18 @@ return ( <div className="site">
     </div>
   </section>
 
-  {/* LATEST STORIES / NEWS */}
-  <section className="latest" id="news">
+  {/* RECENT BLOGS */}
+  <section className="latest" id="blogs">
     <div className="container">
       <SectionHeading
-        title="Latest Stories"
-        label="What's Happening Now"
+        title="Recent Blogs"
+        label="Insights & Analysis"
       />
 
+      {articleLoadError && <p role="status">{articleLoadError}</p>}
+
       <div className="story-grid">
-        {blogs.slice(0, 3).map((blog) => (
+        {articles.slice(0, 3).map((blog) => (
           <article className="story-card" key={blog.id}>
             <div className="story-image">
               {blog.image ? (
@@ -283,7 +313,7 @@ return ( <div className="site">
   </section>
 
   {/* COMPANIES */}
-  <section className="companies-section">
+  <section className="companies-section" id="companies">
     <div className="container">
       <SectionHeading
         title="Companies"
@@ -299,38 +329,43 @@ return ( <div className="site">
         </p>
       </div>
 
+      {companyLoadError && <p className="company-load-error" role="status">{companyLoadError}</p>}
       <div className="company-grid">
-        {companies.map((company) => (
+        {(showAllCompanies ? companyItems : companyItems.slice(0, 3)).map((company) => (
           <article className="company-card" key={company.id}>
             <div className="company-card-header">
-              <div className="company-logo">
-                {company.logo ? (
-                  <img
-                    src={company.logo}
-                    alt={`${company.name} logo`}
-                  />
-                ) : (
-                  <span>{company.name.charAt(0)}</span>
-                )}
-              </div>
+              <CompanyLogo company={company} />
 
               <span className="company-label">COMPANY</span>
             </div>
 
             <h3>{company.name}</h3>
             <p className="company-industry">{company.industry}</p>
+            <p className="company-description">{company.description}</p>
 
-            <a
-              href={company.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="company-link"
-            >
-              Read About {company.name} →
-            </a>
+            {company.website && (
+              <a
+                href={company.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="company-link"
+              >
+                Read About {company.name} →
+              </a>
+            )}
           </article>
         ))}
       </div>
+      {companyItems.length > 3 && (
+        <button
+          type="button"
+          className="company-show-more"
+          aria-expanded={showAllCompanies}
+          onClick={() => setShowAllCompanies((shown) => !shown)}
+        >
+          {showAllCompanies ? "Show less" : "Show more"}
+        </button>
+      )}
     </div>
   </section>
 
@@ -399,115 +434,7 @@ return ( <div className="site">
     </div>
   </section>
 
-  {/* NEWSLETTER */}
-  <section className="newsletter">
-    <div className="container newsletter-inner">
-      <div>
-        <h2>
-          Understand
-          <br />
-          What's Next.
-        </h2>
-
-        <p>
-          Get the latest technology infrastructure stories,
-          explainers and analysis from Tech Inside.
-        </p>
-      </div>
-
-      <form
-        className="newsletter-form"
-        onSubmit={handleNewsletterSubmit}
-      >
-        <input
-          type="email"
-          placeholder="Enter your email address"
-          aria-label="Email address"
-          autoComplete="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-          disabled={newsletterLoading}
-        />
-
-        <button type="submit" disabled={newsletterLoading}>
-          {newsletterLoading ? "Sending..." : "Subscribe"}
-        </button>
-
-        {newsletterMessage && (
-          <p
-            role="status"
-            aria-live="polite"
-            className={`newsletter-message ${
-              newsletterStatus === "error"
-                ? "newsletter-message-error"
-                : "newsletter-message-success"
-            }`}
-          >
-            {newsletterMessage}
-          </p>
-        )}
-      </form>
-    </div>
-  </section>
-
-  {/* FOOTER / CONTACT */}
-  <footer id="contact">
-    <div className="container">
-      <div className="footer-grid">
-        <div className="footer-brand">
-          <div className="logo">
-            <div className="logo-mark">TI</div>
-
-            <div className="logo-text">
-              TECH INSIDE
-              <small>TECHNOLOGY &amp; INFRASTRUCTURE</small>
-            </div>
-          </div>
-
-          <p>
-            Understanding the technology, infrastructure and
-            businesses powering the digital world.
-          </p>
-        </div>
-
-        <FooterColumn
-          title="Coverage"
-          links={[
-            "Data Centers",
-            "AI Infrastructure",
-            "Cloud",
-            "Cybersecurity",
-            "Energy",
-          ]}
-        />
-
-        <FooterColumn
-          title="Explore"
-          links={["Companies", "Latest Stories"]}
-        />
-
-        <div className="footer-contact">
-          <h4>Contact</h4>
-
-          <p>
-            Have a story, correction, partnership idea or question?
-          </p>
-
-          <a href="mailto:contact@techinside.com">
-            contact@techinside.com
-          </a>
-
-          <Link to="/about">About Tech Inside →</Link>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        <span>© 2026 Tech Inside. All rights reserved.</span>
-        <span>Privacy · Terms · Disclaimer</span>
-      </div>
-    </div>
-  </footer>
+  <Footer id="contact" />
 </div>
 
 );
@@ -519,22 +446,6 @@ REUSABLE COMPONENTS
 
 function SectionHeading({ title, label }) {
 return ( <div className="section-heading"> <h2>{title}</h2> <span>{label}</span> </div>
-);
-}
-
-function FooterColumn({ title, links }) {
-return ( <div> <h4>{title}</h4>
-
-
-  <ul>
-    {links.map((link) => (
-      <li key={link}>
-        <a href="#">{link}</a>
-      </li>
-    ))}
-  </ul>
-</div>
-
 );
 }
 
