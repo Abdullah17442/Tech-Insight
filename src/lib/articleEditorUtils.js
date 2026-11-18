@@ -3,6 +3,25 @@ export function isSafeArticleImageSource(source) {
   return /^(https?:\/\/|\/(?!\/)|\.{1,2}\/)[^\s]*$/i.test(value);
 }
 
+export function applyArticleBlockFormat(editor, selection, format) {
+  const headingLevels = new Set(["1", "2", "3"]);
+  if (
+    !editor ||
+    !["normal", ...headingLevels].includes(format) ||
+    typeof editor.format !== "function" ||
+    typeof editor.focus !== "function"
+  ) {
+    return false;
+  }
+
+  if (selection && typeof editor.setSelection === "function") {
+    editor.setSelection(selection, "silent");
+  }
+  editor.focus();
+  editor.format("header", format === "normal" ? false : Number(format), "user");
+  return true;
+}
+
 export function selectImageAtIndex(editor, index) {
   if (
     !editor ||

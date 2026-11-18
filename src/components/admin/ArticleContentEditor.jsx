@@ -8,6 +8,7 @@ import {
 } from "../../lib/articleUtils";
 import { uploadArticleImage } from "../../lib/articleService";
 import {
+  applyArticleBlockFormat,
   applyImageWidth as resizeArticleImage,
   insertImageAtSelection,
   selectImageAtIndex,
@@ -23,7 +24,7 @@ const formattingActions = [
   { command: "underline", label: "Underline", text: "U" },
 ];
 
-const editorFormats = ["font", "bold", "italic", "underline", "list", "image"];
+const editorFormats = ["font", "bold", "italic", "underline", "header", "list", "image"];
 
 function toQuillHtml(value) {
   return articleContentToHtml(value).replace(
@@ -180,6 +181,26 @@ export default function ArticleContentEditor({ value, onChange, resetKey }) {
         className="article-content-toolbar"
         role="toolbar"
       >
+        <label className="article-font-picker">
+          <span className="visually-hidden">Choose paragraph style</span>
+          <select
+            aria-label="Choose paragraph style"
+            defaultValue=""
+            onChange={(event) => {
+              const editor = editorRef.current?.getEditor();
+              applyArticleBlockFormat(editor, savedSelectionRef.current, event.target.value);
+              event.target.value = "";
+            }}
+            onMouseDown={saveSelection}
+            title="Choose paragraph style"
+          >
+            <option value="" disabled>Paragraph style</option>
+            <option value="normal">Normal</option>
+            <option value="1">Heading 1</option>
+            <option value="2">Heading 2</option>
+            <option value="3">Heading 3</option>
+          </select>
+        </label>
         <label className="article-font-picker">
           <span className="visually-hidden">Choose article font</span>
           <select

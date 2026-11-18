@@ -128,6 +128,7 @@ export function sanitizeArticleHtml(value) {
     "EM",
     "H2",
     "H3",
+    "H1",
     "IMG",
     "I",
     "LI",

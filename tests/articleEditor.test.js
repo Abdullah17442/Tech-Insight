@@ -1,12 +1,48 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  applyArticleBlockFormat,
   applyImageWidth,
   insertImageAtSelection,
   isSafeArticleImageSource,
   selectImageAtIndex,
 } from "../src/lib/articleEditorUtils.js";
 import { buildArticlePayload } from "../src/lib/articleUtils.js";
+
+test("applies each supported paragraph style to the saved selection", () => {
+  const selection = { index: 3, length: 5 };
+  const calls = [];
+  const editor = {
+    setSelection: (...args) => calls.push(["setSelection", ...args]),
+    focus: () => calls.push(["focus"]),
+    format: (...args) => calls.push(["format", ...args]),
+  };
+
+  for (const [style, expectedHeader] of [
+    ["1", 1],
+    ["2", 2],
+    ["3", 3],
+    ["normal", false],
+  ]) {
+    calls.length = 0;
+    assert.equal(applyArticleBlockFormat(editor, selection, style), true);
+    assert.deepEqual(calls, [
+      ["setSelection", selection, "silent"],
+      ["focus"],
+      ["format", "header", expectedHeader, "user"],
+    ]);
+  }
+});
+
+test("rejects unsupported paragraph styles without changing the editor", () => {
+  const editor = {
+    setSelection: () => assert.fail("Should not change the selection"),
+    focus: () => assert.fail("Should not focus the editor"),
+    format: () => assert.fail("Should not apply an unsupported style"),
+  };
+
+  assert.equal(applyArticleBlockFormat(editor, null, "4"), false);
+});
 
 test("inserts multiple images at the active cursor positions", () => {
   const embeds = [];
