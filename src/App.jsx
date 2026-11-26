@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminLogin from "./pages/Admin/AdminLogin";
+import CompanyManagement from "./pages/Admin/CompanyManagement";
 import AdminLayout from "./components/admin/AdminLayout";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 
@@ -32,6 +33,7 @@ return ( <BrowserRouter> <Routes>
     <Route element={<ProtectedRoute />}>
       <Route element={<AdminLayout />}>
         <Route path="/insight-vault576" element={<AdminDashboard />} />
+        <Route path="/insight-vault576/companies" element={<CompanyManagement />} />
       </Route>
     </Route>
 
